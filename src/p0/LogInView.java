@@ -1,5 +1,6 @@
 package p0;
 
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -35,22 +36,21 @@ public class LogInView {
 	private Scene scene;
 	private MyWindowListener windowListener;
 	private Alert messageAlert;
-	
-	//private String[] info = new String[2];
-	
+		
 	public LogInView(Stage stage){
 		this.stage = stage;
 		stage.setResizable(false);
 		stage.setTitle("Owlz");
 		
 	}
-	public void show(){
+	public void showLogin(){
 		borderPane = new BorderPane();
 		
 		borderPane.setPadding(new Insets(100,100,300,100));
 		
+		
 		gridPane = new GridPane();
-		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setAlignment(Pos.BOTTOM_CENTER);
 		gridPane.setPadding(new Insets(10));
 		gridPane.setHgap(5);
 		gridPane.setVgap(10);
@@ -66,35 +66,8 @@ public class LogInView {
 		idLabel.setTextFill(Color.WHITE);
 		passwordLabel.setTextFill(Color.WHITE);
 
-		idField.textProperty().addListener(
-			     (observable, old_value, new_value) -> {
-			          if(new_value.contains(" "))
-			          {
-			                //prevents from the new space char
-			                idField.setText(old_value); 
-			          }
-			     }
-			);
-		
-		passwordField.textProperty().addListener(
-			     (observable, old_value, new_value) -> {
-			          if(new_value.contains(" "))
-			          {
-			                //prevents from the new space char
-			                passwordField.setText(old_value); 
-			          }
-			     }
-			);
-		
-		signUp.setOnAction(e->{
-//			info = getUserDetails();
-			
-			MyWindowEvent ev = new MyWindowEvent(this, new User(idField.getText(),passwordField.getText()));
-			if(windowListener != null) {
-				windowListener.buttonClicked(ev);
-				
-			}
-		});
+		noSpacesInTextFields();
+		buttonActions();
 	
 		gridPane.add(idLabel, 0, 0);
 		gridPane.add(idField, 1, 0);
@@ -110,7 +83,7 @@ public class LogInView {
 		
 		Group root = new Group();
 		
-		scene = new Scene(root,600,600,Color.DARKMAGENTA);
+		scene = new Scene(root,900,800,Color.DARKMAGENTA);
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 		root.getChildren().add(borderPane);
@@ -119,15 +92,25 @@ public class LogInView {
 		stage.show();
 		
 	}
-//	public String[] getUserDetails(){
-//		String id = idField.getText();
-//		String password = passwordField.getText();
-//		
-//		info[0]=id;
-//		info[1]=password;
-//		
-//		return info;
-//	}
+	public void buttonActions(){
+		signUp.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this, new User(idField.getText(),passwordField.getText()));
+			if(windowListener != null) {
+				windowListener.signUpButtonClicked(ev);
+				
+			}
+		});
+		
+		logIn.setOnAction(e->{
+			
+			MyWindowEvent v = new MyWindowEvent(this, new User(idField.getText(),passwordField.getText()));
+			if(windowListener != null) {
+				windowListener.loginButtonClicked(v);
+				
+			}
+		});
+	}
+
 	public void setWindowListener(MyWindowListener windowListener) {
 		this.windowListener = windowListener;
 	}
@@ -147,5 +130,32 @@ public class LogInView {
 		return false;
 	
 	}
-	
+	public void noSpacesInTextFields(){
+		idField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //prevents from the new space char
+			                idField.setText(old_value); 
+			          }
+			     }
+			);
+		
+		passwordField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //prevents from the new space char
+			                passwordField.setText(old_value); 
+			          }
+			     }
+			);
+	}
+	public void clearFields(){
+		idField.clear();
+		passwordField.clear();
+	}
+	public void showMainMenu(){
+		
+	}
 }

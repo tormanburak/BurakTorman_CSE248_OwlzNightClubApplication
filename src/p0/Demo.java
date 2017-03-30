@@ -12,8 +12,8 @@ public class Demo extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		LogInView login = new LogInView(stage);
-		UserController uc = new UserController(login);
-		login.show();
+		MainMenuView main = new MainMenuView(stage);
+		UserController uc = new UserController(login,main);
 	}
 
 }
