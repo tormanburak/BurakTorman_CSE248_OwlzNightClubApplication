@@ -34,7 +34,7 @@ public class LogInView {
 	
 	private Stage stage;
 	private Scene scene;
-	private MyWindowListener windowListener;
+	private MyLoginWindowListener windowListener;
 	private Alert messageAlert;
 		
 	public LogInView(Stage stage){
@@ -46,13 +46,13 @@ public class LogInView {
 	public void showLogin(){
 		borderPane = new BorderPane();
 		
-		borderPane.setPadding(new Insets(100,100,300,100));
+		borderPane.setPadding(new Insets(100,170,300,100));
 		
 		
 		gridPane = new GridPane();
 		gridPane.setAlignment(Pos.BOTTOM_CENTER);
-		gridPane.setPadding(new Insets(10));
-		gridPane.setHgap(5);
+		gridPane.setPadding(new Insets(25));
+		gridPane.setHgap(10);
 		gridPane.setVgap(10);
 		
 		
@@ -68,18 +68,20 @@ public class LogInView {
 
 		noSpacesInTextFields();
 		buttonActions();
+		
+		bottom = new HBox(10);
+		bottom.setAlignment(Pos.CENTER);
+		bottom.getChildren().addAll(logIn,signUp);
 	
 		gridPane.add(idLabel, 0, 0);
 		gridPane.add(idField, 1, 0);
 		gridPane.add(passwordLabel, 0, 1);
 		gridPane.add(passwordField, 1, 1);
+		gridPane.add(bottom, 1, 2);
 		
-		bottom = new HBox(10);
-		bottom.setAlignment(Pos.CENTER);
-		bottom.getChildren().addAll(logIn,signUp);
+	
 		
 		borderPane.setCenter(gridPane);
-		borderPane.setBottom(bottom);
 		
 		Group root = new Group();
 		
@@ -111,7 +113,7 @@ public class LogInView {
 		});
 	}
 
-	public void setWindowListener(MyWindowListener windowListener) {
+	public void setWindowListener(MyLoginWindowListener windowListener) {
 		this.windowListener = windowListener;
 	}
 	public void showAlert(String message){
@@ -155,7 +157,5 @@ public class LogInView {
 		idField.clear();
 		passwordField.clear();
 	}
-	public void showMainMenu(){
-		
-	}
+
 }

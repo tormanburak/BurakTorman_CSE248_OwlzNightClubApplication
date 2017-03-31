@@ -14,6 +14,7 @@ public class Demo extends Application {
 		LogInView login = new LogInView(stage);
 		MainMenuView main = new MainMenuView(stage);
 		UserController uc = new UserController(login,main);
+	
 	}
 
 }

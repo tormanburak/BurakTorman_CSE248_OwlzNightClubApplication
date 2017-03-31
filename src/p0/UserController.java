@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 ;
 
@@ -18,39 +20,27 @@ public class UserController {
 	
 	private String userDataFile = "data.dat";
 
-	public UserController(LogInView loginView, MainMenuView mainView){
-		this.loginView=loginView;
-		this.mainView= mainView;
+	public UserController(LogInView loginV, MainMenuView mainV){
+		this.loginView=loginV;
+		this.mainView= mainV;
 		loginView.showLogin();
 
-		loginView.setWindowListener(new MyWindowListener() {
+		logInWindowListenerMethods();
+		
+		mainView.setWindowListener(new MyMainWindowListener(){
 
 			@Override
-			public void signUpButtonClicked(MyWindowEvent ev) {
-				user = ev.getUser();
-				user.setId(ev.getUser().getId());
-				user.setPassword(ev.getUser().getPassword());
+			public void profileMenuItemClicked(MyWindowEvent ev) {
+				//check if profile has been already created
+				//pick type
+				//show gui
+				mainView.showProfileGridPane();
+				System.out.println("Clickhed");
 				
-				checkPasswordValidty();
-			}
-
-			@Override
-			public void loginButtonClicked(MyWindowEvent v) {
-				user = v.getUser();
-				user.setId(v.getUser().getId());
-				user.setPassword(v.getUser().getPassword());
-				readFile();
-				System.out.println(usersMap);
-				if(checkUser(user.getId(),user.getPassword()) == false){
-					loginView.showAlert("Password or ID is incorrect");
-				}else{
-					loginView.showAlert("You have logged in !");
-					mainView.show();
-				}
-				clearFields();
 			}
 			
 		});
+		
 	}
 
 	public void checkPasswordValidty(){
@@ -65,6 +55,7 @@ public class UserController {
 		}
 		else{
 			usersMap.put(user.getId().trim(), user.getPassword().trim());
+			
 			writeToUsersDataFile(usersMap);
 			loginView.showAlert("Congratulations you are a member now");
 			System.out.println(usersMap);
@@ -114,4 +105,36 @@ public class UserController {
 	public void clearFields(){
 		loginView.clearFields();
 	}
+	public void logInWindowListenerMethods(){
+		
+		loginView.setWindowListener(new MyLoginWindowListener() {
+
+			@Override
+			public void signUpButtonClicked(MyWindowEvent ev) {
+				user = ev.getUser();
+				user.setId(ev.getUser().getId());
+				user.setPassword(ev.getUser().getPassword());
+				
+				checkPasswordValidty();
+			}
+
+			@Override
+			public void loginButtonClicked(MyWindowEvent v) {
+				user = v.getUser();
+				user.setId(v.getUser().getId());
+				user.setPassword(v.getUser().getPassword());
+				readFile();
+				System.out.println(usersMap);
+				if(checkUser(user.getId(),user.getPassword()) == false){
+					loginView.showAlert("Password or ID is incorrect");
+				}else{
+					loginView.showAlert("You have logged in !");
+					
+					mainView.show();
+				}
+				clearFields();
+			}
+		});
+	}
+
 }
