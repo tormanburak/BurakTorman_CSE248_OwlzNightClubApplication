@@ -1,11 +1,13 @@
 package p0;
 
 public class Customer extends User {
+	private String lastName;
 	private String birthday;
 	private String phoneNumber;
-	public Customer(String id, String password, String name,String address,String zip) {
-		super(id, password,name, address, zip);
-		
+	public Customer(String id, String password, String name,String phoneNumber,String lastName, String birthday,String address,String zip) {
+		super(id, password,name,phoneNumber, address, zip);
+		this.setLastName(lastName);
+		this.birthday= birthday;
 	}
 	public Customer(){
 		
@@ -16,11 +18,16 @@ public class Customer extends User {
 	public void setBirthday(String birthday) {
 		this.birthday = birthday;
 	}
-	public String getPhoneNumber() {
-		return phoneNumber;
+
+	@Override
+	public String toString() {
+		return super.toString() + "Customer [birthday=" + birthday + ", phoneNumber=" + phoneNumber + "]";
 	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
+	public String getLastName() {
+		return lastName;
+	}
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 	
 	

@@ -19,27 +19,16 @@ public class UserController {
 	private Map<String,String> usersMap = new HashMap<>();
 	
 	private String userDataFile = "data.dat";
-
+	
+	private static String customerType ;
+	
 	public UserController(LogInView loginV, MainMenuView mainV){
 		this.loginView=loginV;
 		this.mainView= mainV;
 		loginView.showLogin();
 
 		logInWindowListenerMethods();
-		
-		mainView.setWindowListener(new MyMainWindowListener(){
-
-			@Override
-			public void profileMenuItemClicked(MyWindowEvent ev) {
-				//check if profile has been already created
-				//pick type
-				//show gui
-				mainView.showProfileGridPane();
-				System.out.println("Clickhed");
-				
-			}
-			
-		});
+		mainMenuViewMethods();
 		
 	}
 
@@ -129,12 +118,70 @@ public class UserController {
 					loginView.showAlert("Password or ID is incorrect");
 				}else{
 					loginView.showAlert("You have logged in !");
-					
+					System.out.println(user.toString());
 					mainView.show();
 				}
 				clearFields();
 			}
 		});
+	}
+	
+	public void mainMenuViewMethods(){
+		mainView.setWindowListener(new MyMainWindowListener(){
+
+			@Override
+			public void profileMenuItemClicked(MyWindowEvent ev) {
+				//check if profile has been already created
+				//pick type
+				//show gui
+				mainView.showProfileGridPane();
+				System.out.println("Clickhed");
+				
+			}
+			@Override
+			public void cutomerRadioButtonClicked(MyWindowEvent ev) {
+				mainView.showCustomerGridPane();
+				customerType = "customer";
+				System.out.println("Customer button clicked");
+			}
+			@Override
+			public void establishmentRadioButtonClicked(MyWindowEvent ev) {
+				mainView.showEstablishmentGridPane();	
+				user = new Establishment();
+				customerType = "establishment";
+				System.out.println("Establishment button clicked");
+
+			}
+			@Override
+			public void cancelButtonClicked(MyWindowEvent ev) {
+				mainView.show();
+				System.out.println("Cancel button clicked");
+			}
+			@Override
+			public void submitButtonClicked(MyWindowEvent ev) {
+				String[] info = mainView.getInfo();
+				String name = info[0];
+				String lastName = info[1];
+				String birthday = info[2];
+				String phoneNumber = info[3];
+				String address = info[4];
+				String zip = info[5];
+				String type = info[6];
+				
+				if(customerType.equals("customer")){
+					user = new Customer(user.getId(),user.getPassword(),name,lastName,birthday,phoneNumber,address,zip);
+					
+				}
+				if(customerType.equals("establishment")){
+					user = new Establishment(user.getId(),user.getPassword(),name,phoneNumber,address, zip, type);
+				}
+
+				System.out.println(user.toString());
+				System.out.println("Submit button");
+			}
+			
+		});
+		
 	}
 
 }

@@ -6,21 +6,23 @@ public class User {
 	private String name;
 	private String address;
 	private String zip;
+	private String phoneNumber;
 	
 	public User(){
 		
 	}
-	public User(String id, String password){
-		
+	public User(String id, String password){	
 		this.id = id;
 		this.password = password;
 	}
-	public User(String id, String password,String name,String address,String zip){
+
+	public User(String id, String password,String name,String phoneNumber,String address,String zip){
 		this.id = id;
 		this.password = password;
 		this.name=name;
-		this.setAddress(address);
-		this.setZip(zip);
+		this.phoneNumber = phoneNumber;
+		this.address = address;
+		this.zip = zip;
 	}
 	public String getId() {
 		return id;
@@ -51,5 +53,16 @@ public class User {
 	}
 	public void setZip(String zip) {
 		this.zip = zip;
+	}
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", password=" + password + ", name=" + name + ", address=" + address + ", zip=" + zip
+				+ "]";
+	}
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 }

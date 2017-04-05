@@ -38,21 +38,29 @@ public class MainMenuView {
 	private MenuItem favoritesMenuItem ;
 	private MenuItem profileMenuItem ;
 
-	private Label nameLabel;
-	private Label lastNameLabel;
-	private Label birthDayLabel;
-	private Label phoneNumberLabel;
-	private Label addressLabel;
-	private Label zipLabel;
-	private Label typeLabel;
+	 private static Label nameLabel = new Label("Name");
+	 private static Label lastNameLabel  = new Label("Last Name");
+	 private static Label birthDayLabel = new Label("Birthday");
+	 private static Label phoneNumberLabel = new Label("Phone Number");
+	 private static Label addressLabel = new Label("Address");
+	 private static Label zipLabel = new Label("Zip");
+	 private static Label typeLabel = new Label("Type");
+
+
 	
-	private TextField nameField;
-	private TextField lastNameField;
-	private TextField birthDayField;
-	private TextField phoneNumberField;
-	private TextField addressField;
-	private TextField zipField;
-	private TextField typeField;
+	private static TextField nameField = new TextField();
+	private static TextField lastNameField = new TextField();
+	private static TextField birthDayField = new TextField();
+	private static TextField phoneNumberField = new TextField();
+	private static TextField addressField = new TextField();
+	private static TextField zipField = new TextField();
+	private static TextField typeField = new TextField();
+	
+	private static Button submitButton = new Button("Submit");
+	private static Button cancelButton = new Button("Cancel");
+
+	private static RadioButton customerRadioButton;
+	private static RadioButton establishmentRadioButton;
 
 	
 	private Stage stage;
@@ -60,7 +68,7 @@ public class MainMenuView {
 	private MyMainWindowListener windowListener;
 	private Alert messageAlert;
 	
-	
+	private String[] info = new String[7];
 	
 	public MainMenuView(Stage s){
 		this.stage=s;
@@ -96,9 +104,7 @@ public class MainMenuView {
 			}
 			
 		});
-		
-
-		
+				
 		Group root = new Group();
 		scene = new Scene(root,900,800,Color.DEEPPINK);
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
@@ -139,13 +145,11 @@ public class MainMenuView {
 		info.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 20));
 		
 		ToggleGroup group = new ToggleGroup();
-		
-		RadioButton rb1 = new RadioButton("Customer");
-		rb1.setToggleGroup(group);
-		RadioButton rb2 = new RadioButton("Establishment");
-		rb2.setToggleGroup(group);
-		
-		
+		customerRadioButton = new RadioButton("Customer");
+		customerRadioButton.setToggleGroup(group);
+		establishmentRadioButton = new RadioButton("Establishment");
+		establishmentRadioButton.setToggleGroup(group);
+		radioButtonsSetAction();
 		
 		HBox top = new HBox();
 		top.setAlignment(Pos.BASELINE_CENTER);
@@ -155,19 +159,121 @@ public class MainMenuView {
 		root.setAlignment(Pos.CENTER);
 		root.getChildren().addAll(top);
 		
+		cancelButtonSetOnAction();
 		
 		gridPane.add(root, 1, 0);
-		gridPane.add(rb1, 1, 1);
-		gridPane.add(rb2, 1, 2);
+		gridPane.add(customerRadioButton, 1, 1);
+		gridPane.add(establishmentRadioButton, 1, 2);
+		gridPane.add(cancelButton, 2, 3);
 
-
+		return gridPane;
 		
+	}
+
+	public GridPane customerProfile(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(10);
+		
+		
+		VBox labelBox = new VBox(20);
+		labelBox.setAlignment(Pos.CENTER);		
+		labelBox.getChildren().addAll(nameLabel,lastNameLabel,birthDayLabel,phoneNumberLabel,addressLabel,zipLabel);
+		
+		VBox fieldBox = new VBox(10);
+		fieldBox.setAlignment(Pos.CENTER);
+		fieldBox.getChildren().addAll(nameField,lastNameField,birthDayField,phoneNumberField,addressField,zipField);
+		
+		cancelButtonSetOnAction();
+		submitButtonSetOnAction();
+		
+		gridPane.add(labelBox, 0, 0);
+		gridPane.add(fieldBox, 1, 0);
+		gridPane.add(cancelButton, 2, 1);
+		gridPane.add(submitButton, 3, 1);
+
+		return gridPane;
+		
+	}
+	public GridPane establishmentProfile(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(10);
+		
+		
+		VBox labelBox = new VBox(20);
+		labelBox.setAlignment(Pos.CENTER);		
+		labelBox.getChildren().addAll(nameLabel,lastNameLabel,birthDayLabel,phoneNumberLabel,addressLabel,zipLabel,typeLabel);
+		
+		VBox fieldBox = new VBox(10);
+		fieldBox.setAlignment(Pos.CENTER);
+		fieldBox.getChildren().addAll(nameField,lastNameField,birthDayField,phoneNumberField,addressField,zipField,typeField);
+		
+		cancelButtonSetOnAction();
+		//submitButtonSetOnAction();
+		
+		gridPane.add(labelBox, 0, 0);
+		gridPane.add(fieldBox, 1, 0);
+		gridPane.add(cancelButton, 2, 1);
+		gridPane.add(submitButton, 3, 1);
+
 		return gridPane;
 		
 	}
 	public void showProfileGridPane(){
 		borderPane.setCenter(profileGridPane());
 	}
-	
+	public void showCustomerGridPane(){
+		borderPane.setCenter(customerProfile());
+	}
+	public void showEstablishmentGridPane(){
+		borderPane.setCenter(establishmentProfile());
+	}
+	public void radioButtonsSetAction(){
+		customerRadioButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.cutomerRadioButtonClicked(ev);		
+			}	
+		});
+		establishmentRadioButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.establishmentRadioButtonClicked(ev);		
+			}	
+		});	
+	}
+	public void cancelButtonSetOnAction(){
+		cancelButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.cancelButtonClicked(ev);
+			}	
+		});
+	}
+	public void submitButtonSetOnAction(){
+		submitButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.submitButtonClicked(ev);
+			}	
+		});
+	}
+	public String[] getInfo(){
+		info[0] = nameField.getText();
+		info[1] = lastNameField.getText();
+		info[2] = birthDayField.getText();
+		info[3] = phoneNumberField.getText();
+		info[4] = addressField.getText();
+		info[5] = zipField.getText();
+		info[6] = typeField.getText();
+
+		return info;
+		
+	}
 }
 
