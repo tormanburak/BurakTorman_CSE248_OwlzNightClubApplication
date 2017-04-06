@@ -54,10 +54,10 @@ public class UserController {
 	}
 	public void writeToUsersDataFile(Map<String,String> map){
 		try {
-			ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream(userDataFile,true));
+			ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream(userDataFile,false));
 			out.writeObject(map);
-			out.flush();
 			out.close();
+			
 		} catch (FileNotFoundException e) {
 			loginView.showAlert("Problem occured with writing to files");
 		} catch (IOException e) {
@@ -147,7 +147,6 @@ public class UserController {
 			@Override
 			public void establishmentRadioButtonClicked(MyWindowEvent ev) {
 				mainView.showEstablishmentGridPane();	
-				user = new Establishment();
 				customerType = "establishment";
 				System.out.println("Establishment button clicked");
 
@@ -172,7 +171,7 @@ public class UserController {
 					user = new Customer(user.getId(),user.getPassword(),name,lastName,birthday,phoneNumber,address,zip);
 					
 				}
-				if(customerType.equals("establishment")){
+				else if(customerType.equals("establishment")){
 					user = new Establishment(user.getId(),user.getPassword(),name,phoneNumber,address, zip, type);
 				}
 

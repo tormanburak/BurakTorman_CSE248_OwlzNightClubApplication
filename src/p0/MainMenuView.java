@@ -204,17 +204,18 @@ public class MainMenuView {
 		gridPane.setHgap(10);
 		gridPane.setVgap(10);
 		
+		Label nameLabel = new Label("Establishment Name");
 		
 		VBox labelBox = new VBox(20);
 		labelBox.setAlignment(Pos.CENTER);		
-		labelBox.getChildren().addAll(nameLabel,lastNameLabel,birthDayLabel,phoneNumberLabel,addressLabel,zipLabel,typeLabel);
+		labelBox.getChildren().addAll(nameLabel,phoneNumberLabel,addressLabel,zipLabel,typeLabel);
 		
 		VBox fieldBox = new VBox(10);
 		fieldBox.setAlignment(Pos.CENTER);
-		fieldBox.getChildren().addAll(nameField,lastNameField,birthDayField,phoneNumberField,addressField,zipField,typeField);
+		fieldBox.getChildren().addAll(nameField,phoneNumberField,addressField,zipField,typeField);
 		
 		cancelButtonSetOnAction();
-		//submitButtonSetOnAction();
+		submitButtonSetOnAction();
 		
 		gridPane.add(labelBox, 0, 0);
 		gridPane.add(fieldBox, 1, 0);
