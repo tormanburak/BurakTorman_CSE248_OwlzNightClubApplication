@@ -6,10 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 ;
 
 public class UserController {
@@ -17,6 +18,7 @@ public class UserController {
 	private LogInView loginView;
 	private MainMenuView mainView;
 	private Map<String,String> usersMap = new HashMap<>();
+	private Set<User> userSet = new HashSet<User>();
 	
 	private String userDataFile = "data.dat";
 	
@@ -26,7 +28,9 @@ public class UserController {
 		this.loginView=loginV;
 		this.mainView= mainV;
 		loginView.showLogin();
-
+		
+		readUsersSetFile();
+		readUsersLoginFieldsFile();
 		logInWindowListenerMethods();
 		mainMenuViewMethods();
 		
@@ -45,14 +49,14 @@ public class UserController {
 		else{
 			usersMap.put(user.getId().trim(), user.getPassword().trim());
 			
-			writeToUsersDataFile(usersMap);
+			writeToUsersLoginFieldsDataFile(usersMap);
 			loginView.showAlert("Congratulations you are a member now");
 			System.out.println(usersMap);
 		}
 		clearFields();
 		
 	}
-	public void writeToUsersDataFile(Map<String,String> map){
+	public void writeToUsersLoginFieldsDataFile(Map<String,String> map){
 		try {
 			ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream(userDataFile,false));
 			out.writeObject(map);
@@ -65,10 +69,11 @@ public class UserController {
 		}
 	}
 	@SuppressWarnings("unchecked")
-	public void readFile(){
+	public void readUsersLoginFieldsFile(){
 		try {
 			ObjectInputStream input = new ObjectInputStream(new FileInputStream(userDataFile));
 			usersMap = (Map<String, String>)input.readObject();
+			System.out.println("user map "+usersMap);
 			input.close();
 			
 		} catch (FileNotFoundException e) {
@@ -84,7 +89,7 @@ public class UserController {
 		for (Map.Entry<String, String> entry : usersMap.entrySet()) {
 		    String userName = entry.getKey();
 		    Object userPassWord = entry.getValue();
-		    
+		    System.out.println(userName+" "+userPassWord);
 		    if((userName.equals(name)) && (userPassWord.equals(password))){
 		    	return true;
 		   }
@@ -109,17 +114,30 @@ public class UserController {
 
 			@Override
 			public void loginButtonClicked(MyWindowEvent v) {
-				user = v.getUser();
-				user.setId(v.getUser().getId());
-				user.setPassword(v.getUser().getPassword());
-				readFile();
-				System.out.println(usersMap);
-				if(checkUser(user.getId(),user.getPassword()) == false){
-					loginView.showAlert("Password or ID is incorrect");
+
+				if(userSet.isEmpty()){
+					user = v.getUser();
+					user.setId(v.getUser().getId());
+					user.setPassword(v.getUser().getPassword());			
 				}else{
+					user = findUser(v);
+
+				}
+				printSet();
+				if(user != null){
+					if(checkUser(user.getId(),user.getPassword()) == false){
+					loginView.showAlert("Password or ID is incorrect");
+					}else{
 					loginView.showAlert("You have logged in !");
 					System.out.println(user.toString());
-					mainView.show();
+					//check if user has created a profile before
+					//check if its customer or est and show proper view
+					mainView.showIntroView();
+					//mainView.showProfileGridPane();
+
+					}
+				}else{
+					loginView.showAlert("Password or ID is incorrect2");
 				}
 				clearFields();
 			}
@@ -153,7 +171,7 @@ public class UserController {
 			}
 			@Override
 			public void cancelButtonClicked(MyWindowEvent ev) {
-				mainView.show();
+				mainView.showIntroView();
 				System.out.println("Cancel button clicked");
 			}
 			@Override
@@ -168,19 +186,83 @@ public class UserController {
 				String type = info[6];
 				
 				if(customerType.equals("customer")){
-					user = new Customer(user.getId(),user.getPassword(),name,lastName,birthday,phoneNumber,address,zip);
+					user = new Customer(user.getId(),user.getPassword(),name,phoneNumber,lastName,birthday,address,zip);
+					mainView.showCustomerView();
 					
 				}
 				else if(customerType.equals("establishment")){
 					user = new Establishment(user.getId(),user.getPassword(),name,phoneNumber,address, zip, type);
+					mainView.showEstablishmentView();
 				}
-
+				
+				addUser(user);
 				System.out.println(user.toString());
-				System.out.println("Submit button");
-			}
-			
-		});
-		
+				System.out.println("Submit button ");
+				printSet();
+			}	
+		});	
 	}
 
+	public void writeUserSetFile(Set<User> userSet){
+	  
+	        try {
+	        	@SuppressWarnings("resource")
+				ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream("userSet.dat",false));
+	     		writer.writeObject(userSet);
+	      	    
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+	}
+	@SuppressWarnings("unchecked")
+	public void readUsersSetFile(){
+		try {
+			@SuppressWarnings("resource")
+			ObjectInputStream reader = new ObjectInputStream(new FileInputStream("userSet.dat"));
+			userSet = (HashSet<User>) reader.readObject();
+			printSet();
+		} catch (FileNotFoundException e) {
+			System.out.println("Fof exp reading set");
+		} catch (IOException e) {
+			System.out.println("Ioexp reading set");
+		} catch (ClassNotFoundException e) {
+			System.out.println("Class not found exp reading set");
+		}
+	}
+	public  boolean checkIfUserExist(User user){
+		User[] array = new User[userSet.size()];
+		userSet.toArray(array);
+		
+		for(int i =0; i< array.length;i++){
+			if(array[i].getId().equals(user.getId())){
+				return true;
+			}
+		}
+		return false;
+		
+	}
+	public void addUser(User user){
+	if(checkIfUserExist(user) == false){
+		userSet.add(user);
+		writeUserSetFile(userSet);
+		}
+	}
+	public void printSet(){
+		for(User u : userSet){
+			System.out.println(u.toString());
+		}
+	}
+	public User findUser(MyWindowEvent v){
+		User[] array = new User[userSet.size()];
+		userSet.toArray(array);
+		
+		for(int i =0; i<array.length;i++){
+			if(array[i].getId().equals(v.getUser().getId())){
+				user = array[i];
+				return user;
+			}
+		}
+		return null;
+		
+	}
 }

@@ -76,7 +76,7 @@ public class MainMenuView {
 		stage.setTitle("Owlz");
 		
 	}
-	public void show(){
+	public void showIntroView(){
 		borderPane = new BorderPane();
 		
 		gridPane = new GridPane();
@@ -85,25 +85,7 @@ public class MainMenuView {
 		gridPane.setHgap(5);
 		gridPane.setVgap(10);
 		
-		menuBar = new MenuBar();
-		menuBar.prefWidthProperty().bind(stage.widthProperty());
-		profileMenu = new Menu("Profile");
-		historyMenuItem = new MenuItem("History");
-		favoritesMenuItem = new MenuItem("Favorites");
-		profileMenuItem = new MenuItem("Profile");
-		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem,favoritesMenuItem);
-		menuBar.getMenus().add(profileMenu);
-		
-		borderPane.setTop(menuBar);
-		borderPane.setCenter(gridPane);
-		
-		profileMenuItem.setOnAction(e->{
-			MyWindowEvent ev = new MyWindowEvent(this);
-			if(windowListener != null) {
-				windowListener.profileMenuItemClicked(ev);			
-			}
-			
-		});
+		borderPane.setCenter(profileGridPane());
 				
 		Group root = new Group();
 		scene = new Scene(root,900,800,Color.DEEPPINK);
@@ -274,6 +256,83 @@ public class MainMenuView {
 		info[6] = typeField.getText();
 
 		return info;
+		
+	}
+	public void showCustomerView(){
+		borderPane = new BorderPane();
+		
+		gridPane = new GridPane();
+		gridPane.setAlignment(Pos.BOTTOM_CENTER);
+		gridPane.setPadding(new Insets(10));
+		gridPane.setHgap(5);
+		gridPane.setVgap(10);
+		
+		menuBar = new MenuBar();
+		menuBar.prefWidthProperty().bind(stage.widthProperty());
+		profileMenu = new Menu("Profile");
+		historyMenuItem = new MenuItem("History");
+		favoritesMenuItem = new MenuItem("Favorites");
+		profileMenuItem = new MenuItem("Profile");
+		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem,favoritesMenuItem);
+		menuBar.getMenus().add(profileMenu);
+		
+		borderPane.setTop(menuBar);
+		borderPane.setCenter(gridPane);
+		
+		profileMenuItem.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.profileMenuItemClicked(ev);			
+			}
+			
+		});
+				
+		Group root = new Group();
+		scene = new Scene(root,900,800,Color.DEEPPINK);
+		borderPane.prefHeightProperty().bind(scene.heightProperty());
+		borderPane.prefWidthProperty().bind(scene.widthProperty());
+		root.getChildren().add(borderPane);
+		stage.setScene(scene);
+		stage.show();
+
+		
+	}
+	public void showEstablishmentView(){
+		borderPane = new BorderPane();
+		
+		gridPane = new GridPane();
+		gridPane.setAlignment(Pos.BOTTOM_CENTER);
+		gridPane.setPadding(new Insets(10));
+		gridPane.setHgap(5);
+		gridPane.setVgap(10);
+		
+		menuBar = new MenuBar();
+		menuBar.prefWidthProperty().bind(stage.widthProperty());
+		profileMenu = new Menu("Profile");
+		historyMenuItem = new MenuItem("History");
+		favoritesMenuItem = new MenuItem("Favorites");
+		profileMenuItem = new MenuItem("Profile");
+		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem,favoritesMenuItem);
+		menuBar.getMenus().add(profileMenu);
+		
+		borderPane.setTop(menuBar);
+		borderPane.setCenter(gridPane);
+		
+		profileMenuItem.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.profileMenuItemClicked(ev);			
+			}
+			
+		});
+				
+		Group root = new Group();
+		scene = new Scene(root,900,800,Color.WHITE);
+		borderPane.prefHeightProperty().bind(scene.heightProperty());
+		borderPane.prefWidthProperty().bind(scene.widthProperty());
+		root.getChildren().add(borderPane);
+		stage.setScene(scene);
+		stage.show();
 		
 	}
 }

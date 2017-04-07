@@ -1,12 +1,13 @@
 package p0;
 
-public class Customer extends User {
+import java.io.Serializable;
+
+public class Customer extends User implements Serializable {
 	private String lastName;
 	private String birthday;
-	private String phoneNumber;
 	public Customer(String id, String password, String name,String phoneNumber,String lastName, String birthday,String address,String zip) {
 		super(id, password,name,phoneNumber, address, zip);
-		this.setLastName(lastName);
+		this.lastName =lastName;
 		this.birthday= birthday;
 	}
 	public Customer(){
@@ -21,7 +22,7 @@ public class Customer extends User {
 
 	@Override
 	public String toString() {
-		return super.toString() + "Customer [birthday=" + birthday + ", phoneNumber=" + phoneNumber + "]";
+		return super.toString() + "Customer [birthday=" + birthday + " lastName "+lastName+"]";
 	}
 	public String getLastName() {
 		return lastName;

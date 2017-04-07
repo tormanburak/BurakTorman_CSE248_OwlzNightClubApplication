@@ -1,6 +1,8 @@
 package p0;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
 	private String id;
 	private String password;
 	private String name;
@@ -23,6 +25,12 @@ public class User {
 		this.phoneNumber = phoneNumber;
 		this.address = address;
 		this.zip = zip;
+	}
+	
+	public boolean hasProfile(){
+		
+		return true;
+		
 	}
 	public String getId() {
 		return id;
@@ -57,7 +65,7 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", password=" + password + ", name=" + name + ", address=" + address + ", zip=" + zip
-				+ "]";
+				+ " phoneNumber "+phoneNumber+" ]";
 	}
 	public String getPhoneNumber() {
 		return phoneNumber;

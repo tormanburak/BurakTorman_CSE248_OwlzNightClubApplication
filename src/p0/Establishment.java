@@ -1,6 +1,8 @@
 package p0;
 
-public class Establishment extends User{
+import java.io.Serializable;
+
+public class Establishment extends User implements Serializable{
 	private String type;
 	public Establishment(String id, String password, String name,String phoneNumber ,String address,String zip,String type) {
 		super(id, password,name,phoneNumber, address, zip);
