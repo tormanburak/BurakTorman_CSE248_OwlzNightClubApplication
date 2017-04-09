@@ -79,7 +79,7 @@ public class UserController {
 		} catch (FileNotFoundException e) {
 			loginView.showAlert("Problem occured with reading files");
 		} catch (IOException e) {
-			loginView.showAlert("IO exception");
+			
 		} catch (ClassNotFoundException e) {
 			loginView.showAlert("Class not found while reading file");
 		}
@@ -115,7 +115,7 @@ public class UserController {
 			@Override
 			public void loginButtonClicked(MyWindowEvent v) {
 
-				if(userSet.isEmpty()){
+				if(userSet.isEmpty() || !userSet.contains(findUser(v))){
 					user = v.getUser();
 					user.setId(v.getUser().getId());
 					user.setPassword(v.getUser().getPassword());			
@@ -130,11 +130,15 @@ public class UserController {
 					}else{
 					loginView.showAlert("You have logged in !");
 					System.out.println(user.toString());
-					//check if user has created a profile before
-					//check if its customer or est and show proper view
-					mainView.showIntroView();
-					//mainView.showProfileGridPane();
+					if(user.hasProfile() && user instanceof Customer){
+						mainView.showCustomerView();
+					}else if(user.hasProfile() && user instanceof Establishment){
+						mainView.showEstablishmentView();
+					}
 
+					else{
+					mainView.showIntroView();
+						}
 					}
 				}else{
 					loginView.showAlert("Password or ID is incorrect2");
@@ -152,7 +156,11 @@ public class UserController {
 				//check if profile has been already created
 				//pick type
 				//show gui
-				mainView.showProfileGridPane();
+				if(user.hasProfile() && user instanceof Customer){
+					mainView.showCustomerGridPane();
+				}else if (user.hasProfile() && user instanceof Establishment){
+					mainView.showEstablishmentGridPane();
+				}
 				System.out.println("Clickhed");
 				
 			}

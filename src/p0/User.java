@@ -28,7 +28,9 @@ public class User implements Serializable {
 	}
 	
 	public boolean hasProfile(){
-		
+		if(getName() == null && getZip()== null){
+			return false;
+		}
 		return true;
 		
 	}
