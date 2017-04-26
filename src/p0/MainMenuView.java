@@ -1,16 +1,19 @@
 package p0;
 
+
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
@@ -34,41 +37,64 @@ public class MainMenuView {
 	
 	private MenuBar menuBar;
 	private Menu profileMenu;
+	private Menu eventMenu;
 	private MenuItem historyMenuItem;
 	private MenuItem favoritesMenuItem ;
 	private MenuItem profileMenuItem ;
+	private MenuItem createEventMenuItem ;
+	private MenuItem searchEvent;
 
-	 private static Label nameLabel = new Label("Name");
-	 private static Label lastNameLabel  = new Label("Last Name");
-	 private static Label birthDayLabel = new Label("Birthday");
-	 private static Label phoneNumberLabel = new Label("Phone Number");
-	 private static Label addressLabel = new Label("Address");
-	 private static Label zipLabel = new Label("Zip");
-	 private static Label typeLabel = new Label("Type");
+
+	 private Label nameLabel = new Label("Name");
+	 private Label lastNameLabel  = new Label("Last Name");
+	 private Label birthDayLabel = new Label("Birthday");
+	 private Label phoneNumberLabel = new Label("Phone Number");
+	 private Label addressLabel = new Label("Address");
+	 private Label zipLabel = new Label("Zip");
+	 private Label typeLabel = new Label("Type");
 
 
 	
-	private static TextField nameField = new TextField();
-	private static TextField lastNameField = new TextField();
-	private static TextField birthDayField = new TextField();
-	private static TextField phoneNumberField = new TextField();
-	private static TextField addressField = new TextField();
-	private static TextField zipField = new TextField();
-	private static TextField typeField = new TextField();
-	
-	private static Button submitButton = new Button("Submit");
-	private static Button cancelButton = new Button("Cancel");
+	private TextField nameField = new TextField();
+	private TextField lastNameField = new TextField();
+	private TextField birthDayField = new TextField();
+	private TextField phoneNumberField = new TextField();
+	private TextField addressField = new TextField();
+	private TextField zipField = new TextField();
+	private TextField typeField = new TextField();
+	private TextField eventNameField;
+	private TextField eventAddressField;
+	private TextField eventTypeField;
+	private TextField eventStartTimeField;
+	private TextField eventZIPField;
+	private TextField searchEventField;
+	private TextField ticketAmountField;
+	private TextField ticketPriceField;
 
-	private static RadioButton customerRadioButton;
-	private static RadioButton establishmentRadioButton;
+	
+	private Button submitButton = new Button("Submit");
+	private Button cancelButton = new Button("Cancel");
+	private Button eventSetButton;
+	private Button searchEventButton;
+	private Button buyTicketsButton;
+	private Button purchaseButton;
+
+	private RadioButton customerRadioButton;
+	private RadioButton establishmentRadioButton;
 
 	
 	private Stage stage;
 	private Scene scene;
 	private MyMainWindowListener windowListener;
 	private Alert messageAlert;
+	private ListView<Event> eventListView;
 	
-	private String[] info = new String[7];
+	private String[] userInfo = new String[7];
+	private String[] eventInfo = new String[5];
+	private String eventZIP;
+	private TextField priceField;
+
+
 	
 	public MainMenuView(Stage s){
 		this.stage=s;
@@ -85,7 +111,7 @@ public class MainMenuView {
 		gridPane.setHgap(5);
 		gridPane.setVgap(10);
 		
-		borderPane.setCenter(profileGridPane());
+		borderPane.setCenter(createProfileGridPane());
 				
 		Group root = new Group();
 		scene = new Scene(root,900,800,Color.DEEPPINK);
@@ -113,7 +139,7 @@ public class MainMenuView {
 		return false;
 	}
 
-	public GridPane profileGridPane(){
+	public GridPane createProfileGridPane(){
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(5));
 		gridPane.setAlignment(Pos.CENTER);
@@ -152,7 +178,7 @@ public class MainMenuView {
 		
 	}
 
-	public GridPane customerProfile(){
+	public GridPane customerCreateProfileView(){
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(5));
 		gridPane.setAlignment(Pos.CENTER);
@@ -179,7 +205,7 @@ public class MainMenuView {
 		return gridPane;
 		
 	}
-	public GridPane establishmentProfile(){
+	public GridPane establishmentCreateProfileView(){
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(5));
 		gridPane.setAlignment(Pos.CENTER);
@@ -208,13 +234,13 @@ public class MainMenuView {
 		
 	}
 	public void showProfileGridPane(){
-		borderPane.setCenter(profileGridPane());
+		borderPane.setCenter(createProfileGridPane());
 	}
 	public void showCustomerGridPane(){
-		borderPane.setCenter(customerProfile());
+		borderPane.setCenter(customerCreateProfileView());
 	}
 	public void showEstablishmentGridPane(){
-		borderPane.setCenter(establishmentProfile());
+		borderPane.setCenter(establishmentCreateProfileView());
 	}
 	public void radioButtonsSetAction(){
 		customerRadioButton.setOnAction(e->{
@@ -246,17 +272,36 @@ public class MainMenuView {
 			}	
 		});
 	}
-	public String[] getInfo(){
-		info[0] = nameField.getText();
-		info[1] = lastNameField.getText();
-		info[2] = birthDayField.getText();
-		info[3] = phoneNumberField.getText();
-		info[4] = addressField.getText();
-		info[5] = zipField.getText();
-		info[6] = typeField.getText();
+	public String[] getUserInfo(){
+		userInfo[0] = nameField.getText();
+		userInfo[1] = lastNameField.getText();
+		userInfo[2] = birthDayField.getText();
+		userInfo[3] = phoneNumberField.getText();
+		userInfo[4] = addressField.getText();
+		userInfo[5] = zipField.getText();
+		userInfo[6] = typeField.getText();
 
-		return info;
+		return userInfo;
 		
+	}
+	public String[] getEventInfo(){
+		eventInfo[0] = eventNameField.getText();
+		eventInfo[1] = eventAddressField.getText();
+		eventInfo[2] = eventZIPField.getText();
+		eventInfo[3] = eventTypeField.getText();
+		eventInfo[4] = eventStartTimeField.getText();
+		return eventInfo;
+		
+	}
+	public int getTicketAmount(){
+		int ticketAmount = Integer.parseInt(ticketAmountField.getText());
+		return ticketAmount;
+	}
+	public String getTicketPrice(){
+		return ticketPriceField.getText();
+	}
+	public String getEventZip(){
+		return eventZIP = searchEventField.getText();
 	}
 	public void showCustomerView(){
 		borderPane = new BorderPane();
@@ -270,22 +315,22 @@ public class MainMenuView {
 		menuBar = new MenuBar();
 		menuBar.prefWidthProperty().bind(stage.widthProperty());
 		profileMenu = new Menu("Profile");
+		eventMenu = new Menu ("Event");
+		
 		historyMenuItem = new MenuItem("History");
 		favoritesMenuItem = new MenuItem("Favorites");
 		profileMenuItem = new MenuItem("Profile");
+		searchEvent = new MenuItem("Search Event");
+		
 		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem,favoritesMenuItem);
-		menuBar.getMenus().add(profileMenu);
+		eventMenu.getItems().add(searchEvent);
+		menuBar.getMenus().addAll(profileMenu,eventMenu);
 		
 		borderPane.setTop(menuBar);
 		borderPane.setCenter(gridPane);
 		
-		profileMenuItem.setOnAction(e->{
-			MyWindowEvent ev = new MyWindowEvent(this);
-			if(windowListener != null) {
-				windowListener.profileMenuItemClicked(ev);			
-			}
-			
-		});
+		eventSearchMenuItemAction();
+		profileMenuItemAction();
 				
 		Group root = new Group();
 		scene = new Scene(root,900,800,Color.DEEPPINK);
@@ -309,15 +354,180 @@ public class MainMenuView {
 		menuBar = new MenuBar();
 		menuBar.prefWidthProperty().bind(stage.widthProperty());
 		profileMenu = new Menu("Profile");
+		eventMenu = new Menu("Event");
+		
 		historyMenuItem = new MenuItem("History");
-		favoritesMenuItem = new MenuItem("Favorites");
 		profileMenuItem = new MenuItem("Profile");
-		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem,favoritesMenuItem);
-		menuBar.getMenus().add(profileMenu);
+		createEventMenuItem = new MenuItem("Set Event");
+		
+		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem);
+		eventMenu.getItems().add(createEventMenuItem);
+		menuBar.getMenus().addAll(profileMenu,eventMenu);
 		
 		borderPane.setTop(menuBar);
 		borderPane.setCenter(gridPane);
 		
+		profileMenuItemAction();
+		createEventMenuItemAction();
+				
+		Group root = new Group();
+		scene = new Scene(root,900,800,Color.DEEPPINK);
+		borderPane.prefHeightProperty().bind(scene.heightProperty());
+		borderPane.prefWidthProperty().bind(scene.widthProperty());
+		root.getChildren().add(borderPane);
+		stage.setScene(scene);
+		stage.show();
+	}
+	public GridPane eventCreateView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(20);
+		
+		Label eventNameLabel = new Label("Event Name");
+		Label eventAddressLabel = new Label("Event Address");
+		Label eventTypeLabel = new Label("Event Type");
+		Label eventStartTimeLabel = new Label("Event Time");
+		Label eventZip = new Label("Event ZIP");
+		Label ticketAmountLabel = new Label("Ticket quantity");
+		Label ticketPriceLabel = new Label("Ticket price");
+
+
+		 eventNameField = new TextField();
+		 eventAddressField = new TextField();
+		 eventTypeField = new TextField();
+		 eventStartTimeField = new TextField();
+		 eventZIPField = new TextField();
+		 ticketAmountField = new TextField();
+		 ticketPriceField = new TextField();
+		
+		eventSetButton = new Button("Set Event");
+		eventSetButtonAction();
+		
+		HBox buttonBox = new HBox(10);
+		buttonBox.getChildren().addAll(cancelButton,eventSetButton);
+		
+		gridPane.add(eventNameLabel, 0, 1);
+		gridPane.add(eventAddressLabel, 0, 2);
+		gridPane.add(eventZip, 0, 3);
+		gridPane.add(eventTypeLabel, 0, 4);
+		gridPane.add(eventStartTimeLabel, 0, 5);
+		gridPane.add(ticketAmountLabel, 0, 6);
+		gridPane.add(ticketPriceLabel, 0, 7);
+
+		
+		gridPane.add(eventNameField, 1, 1);
+		gridPane.add(eventAddressField, 1, 2);
+		gridPane.add(eventZIPField, 1, 3);
+		gridPane.add(eventTypeField, 1, 4);
+		gridPane.add(eventStartTimeField, 1, 5);
+		gridPane.add(ticketAmountField, 1, 6);
+		gridPane.add(ticketPriceField, 1, 7);
+		gridPane.add(buttonBox,2,8);
+		
+		
+		cancelButtonSetOnAction();
+
+		return gridPane;
+		
+	}
+	public GridPane searchEventView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(20);
+		
+		Label eventZIP = new Label("Search Event by ZIP");		
+		searchEventField = new TextField();
+		eventListView = new ListView<Event>();
+		eventListView.setPrefWidth(600);
+		searchEventButton = new Button("Search Event");
+		buyTicketsButton = new Button("Buy Tickets!");
+		
+	
+		HBox buttonBox = new HBox(10);
+		buttonBox.getChildren().addAll(cancelButton,buyTicketsButton);
+		
+		gridPane.add(eventZIP, 0, 1);
+		gridPane.add(searchEventField, 1, 1);
+		gridPane.add(eventListView, 1, 4,10,10);
+		gridPane.add(searchEventButton, 2, 1);
+		gridPane.add(buttonBox, 3, 16);
+		
+
+
+
+		buyTicketButtonAction();
+		searchEventButtonAction();
+		cancelButtonSetOnAction();
+
+		return gridPane;
+		
+	}
+	public GridPane purchaseTicketView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(20);
+		
+		Label ticketLabel = new Label("Ticket Quantity");
+		Label priceLabel = new Label("Price");
+		priceField = new TextField();
+		priceField.setEditable(false);
+		purchaseButton = new Button("Purchase");
+		ComboBox<Integer> ticketComboBox = new ComboBox<Integer>();
+		
+		ticketComboBox.getItems().addAll(1,2);
+		
+		HBox buttonBox = new HBox(10);
+		buttonBox.getChildren().addAll(cancelButton,purchaseButton);
+		
+		gridPane.add(ticketLabel, 0, 1);
+		gridPane.add(ticketComboBox, 1, 1);
+		gridPane.add(priceLabel, 0, 2);
+		gridPane.add(priceField, 1, 2);
+		gridPane.add(buttonBox, 2, 3);
+	
+		
+		cancelButtonSetOnAction();
+
+		
+		return gridPane;
+		
+	}
+	public void showPurchaseView(){
+		borderPane.setCenter(purchaseTicketView());
+	}
+	public void setTicketPrice(String price){
+		priceField.setText(price);
+	}
+	
+	public Event getListViewItems(){
+		Event event = new Event();
+		return event = eventListView.getSelectionModel().getSelectedItem();
+	}
+	public void showFoundEvents(ObservableList<Event> event){
+		eventListView.setItems(event);
+	}
+	public void showEventCreateView(){
+		borderPane.setCenter(eventCreateView());
+	}
+	public void showEventSearchView(){
+		borderPane.setCenter(searchEventView());
+	}
+	public void buyTicketButtonAction(){
+		buyTicketsButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+		if(windowListener != null) {
+			windowListener.buyTicketsButtonClicked(ev);			
+		}
+			
+		});
+	}
+	public void profileMenuItemAction(){
 		profileMenuItem.setOnAction(e->{
 			MyWindowEvent ev = new MyWindowEvent(this);
 			if(windowListener != null) {
@@ -325,15 +535,39 @@ public class MainMenuView {
 			}
 			
 		});
-				
-		Group root = new Group();
-		scene = new Scene(root,900,800,Color.WHITE);
-		borderPane.prefHeightProperty().bind(scene.heightProperty());
-		borderPane.prefWidthProperty().bind(scene.widthProperty());
-		root.getChildren().add(borderPane);
-		stage.setScene(scene);
-		stage.show();
-		
+	}
+	public void eventSearchMenuItemAction(){
+		searchEvent.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.eventSearchMenuItemClicked(ev);		
+			}
+			
+		});
+	}
+	public void eventSetButtonAction(){
+		eventSetButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null ){
+				windowListener.eventSetButtonClicked(ev);
+			}
+		});
+	}
+	public void createEventMenuItemAction(){
+		createEventMenuItem.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null ){
+				windowListener.eventCreateMenuItemClicked(ev);
+			}
+		});
+	}
+	public void searchEventButtonAction(){
+		searchEventButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null ){
+				windowListener.searchEventButton(ev);
+			}
+		});
 	}
 }
 

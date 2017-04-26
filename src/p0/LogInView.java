@@ -137,7 +137,7 @@ public class LogInView {
 			     (observable, old_value, new_value) -> {
 			          if(new_value.contains(" "))
 			          {
-			                //prevents from the new space char
+			                //allows no spaces in log in fields
 			                idField.setText(old_value); 
 			          }
 			     }
