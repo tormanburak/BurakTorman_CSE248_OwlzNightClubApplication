@@ -23,6 +23,10 @@ public interface MyMainWindowListener extends EventListener {
 	public void searchEventButton(MyWindowEvent ev);
 
 	public void buyTicketsButtonClicked(MyWindowEvent ev);
+
+	public void purchaseButtonClicked(MyWindowEvent ev);
+
+	public void historyMenuItemClicked(MyWindowEvent ev);
 	
 
 

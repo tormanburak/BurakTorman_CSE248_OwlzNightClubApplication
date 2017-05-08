@@ -1,6 +1,7 @@
 package p0;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Event implements Serializable{
@@ -9,7 +10,7 @@ public class Event implements Serializable{
 	private String eventZIP;
 	private String eventType;
 	private String eventStartTime;
-	private Ticket[] ticketArray;
+	private ArrayList<Ticket> ticketArrayList;
 	private Ticket ticket;
 	
 	public Event(String eventName,String eventAddress,String eventZIP, String eventType , String eventStartTime){
@@ -22,17 +23,22 @@ public class Event implements Serializable{
 
 	public Event() {
 	}
-	public void createTicketArray(int amount){
-		ticketArray = new Ticket[amount];
+	public void createTicketArrayList(int amount){
+		ticketArrayList = new ArrayList<Ticket>(amount);
 		for(int i =0; i<amount; i++){
-			ticketArray[i] = ticket;
+			ticketArrayList.add(ticket);
 		}
 	}
-	public Ticket[] getTicketArray(){
-		return ticketArray;
+	public void removeTicketsArrayList(int amount){
+		for(int i =0; i<amount; i++){
+			ticketArrayList.remove(ticket);
+		}
 	}
-	public void setTicketArray(Ticket[] array){
-		this.ticketArray = array;
+	public ArrayList<Ticket> getTicketArrayList(){
+		return ticketArrayList;
+	}
+	public void setTicketArrayList(ArrayList<Ticket> list){
+		this.ticketArrayList = list;
 	}
 
 	public String getEventAddress() {
@@ -83,7 +89,7 @@ public class Event implements Serializable{
 	public String toString() {
 		return "Event Name = " + eventName + " |Event Address = " + eventAddress + " |Event ZIP = " + eventZIP
 				+ " |Event Type = " + eventType + " |Event Start-Time = " + eventStartTime + " |Tickets Available = "
-				+ ticketArray.length+ " |Ticket price = "+ticket.getPrice()+"";
+				+ ticketArrayList.size()+ " |Ticket price = "+ticket.getPrice()+"";
 	}
 
 	public Ticket getTicket() {

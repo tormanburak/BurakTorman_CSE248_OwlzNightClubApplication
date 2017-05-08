@@ -39,7 +39,6 @@ public class MainMenuView {
 	private Menu profileMenu;
 	private Menu eventMenu;
 	private MenuItem historyMenuItem;
-	private MenuItem favoritesMenuItem ;
 	private MenuItem profileMenuItem ;
 	private MenuItem createEventMenuItem ;
 	private MenuItem searchEvent;
@@ -88,11 +87,14 @@ public class MainMenuView {
 	private MyMainWindowListener windowListener;
 	private Alert messageAlert;
 	private ListView<Event> eventListView;
+	private ListView<Event> customerAllEventListView;
+
 	
 	private String[] userInfo = new String[7];
 	private String[] eventInfo = new String[5];
 	private String eventZIP;
 	private TextField priceField;
+	private ComboBox<Integer> ticketComboBox;
 
 
 	
@@ -303,11 +305,14 @@ public class MainMenuView {
 	public String getEventZip(){
 		return eventZIP = searchEventField.getText();
 	}
+	/**
+	 * 
+	 */
 	public void showCustomerView(){
 		borderPane = new BorderPane();
 		
 		gridPane = new GridPane();
-		gridPane.setAlignment(Pos.BOTTOM_CENTER);
+		gridPane.setAlignment(Pos.CENTER);
 		gridPane.setPadding(new Insets(10));
 		gridPane.setHgap(5);
 		gridPane.setVgap(10);
@@ -318,13 +323,20 @@ public class MainMenuView {
 		eventMenu = new Menu ("Event");
 		
 		historyMenuItem = new MenuItem("History");
-		favoritesMenuItem = new MenuItem("Favorites");
 		profileMenuItem = new MenuItem("Profile");
 		searchEvent = new MenuItem("Search Event");
+		customerAllEventListView = new ListView<Event>();
+		customerAllEventListView.setPrefWidth(600);
+		customerAllEventListView.setPrefHeight(600);
 		
-		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem,favoritesMenuItem);
+		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem);
 		eventMenu.getItems().add(searchEvent);
 		menuBar.getMenus().addAll(profileMenu,eventMenu);
+		
+		Label infoLabel = new Label("All Recent Events");
+		infoLabel.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 40));
+		gridPane.add(customerAllEventListView, 0,1);
+		gridPane.add(infoLabel, 0, 0);
 		
 		borderPane.setTop(menuBar);
 		borderPane.setCenter(gridPane);
@@ -478,9 +490,9 @@ public class MainMenuView {
 		priceField = new TextField();
 		priceField.setEditable(false);
 		purchaseButton = new Button("Purchase");
-		ComboBox<Integer> ticketComboBox = new ComboBox<Integer>();
+		 ticketComboBox = new ComboBox<Integer>();
 		
-		ticketComboBox.getItems().addAll(1,2);
+		ticketComboBox.getItems().addAll(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
 		
 		HBox buttonBox = new HBox(10);
 		buttonBox.getChildren().addAll(cancelButton,purchaseButton);
@@ -491,12 +503,26 @@ public class MainMenuView {
 		gridPane.add(priceField, 1, 2);
 		gridPane.add(buttonBox, 2, 3);
 	
-		
+		purchaseButtonAction();
 		cancelButtonSetOnAction();
 
 		
 		return gridPane;
 		
+	}
+	public int getTicketAmountPurchased(){
+		int ticketQuantity = ticketComboBox.getValue();
+		
+		return ticketQuantity;
+		
+	}
+	public int getTicketPricePurchased(){
+		int ticketPrice = Integer.valueOf(priceField.getText());
+		return ticketPrice;
+	}
+	public int calculateTicketPrice(){
+		int total = getTicketAmountPurchased() * getTicketPricePurchased();
+		return total;
 	}
 	public void showPurchaseView(){
 		borderPane.setCenter(purchaseTicketView());
@@ -511,6 +537,9 @@ public class MainMenuView {
 	}
 	public void showFoundEvents(ObservableList<Event> event){
 		eventListView.setItems(event);
+	}
+	public void showAllEvents(ObservableList<Event> event){
+		customerAllEventListView.setItems(event);
 	}
 	public void showEventCreateView(){
 		borderPane.setCenter(eventCreateView());
@@ -536,6 +565,15 @@ public class MainMenuView {
 			
 		});
 	}
+	public void HistoryMenuItemAction(){
+		profileMenuItem.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.historyMenuItemClicked(ev);			
+			}
+			
+		});
+	}
 	public void eventSearchMenuItemAction(){
 		searchEvent.setOnAction(e->{
 			MyWindowEvent ev = new MyWindowEvent(this);
@@ -550,6 +588,14 @@ public class MainMenuView {
 			MyWindowEvent ev = new MyWindowEvent(this);
 			if(windowListener != null ){
 				windowListener.eventSetButtonClicked(ev);
+			}
+		});
+	}
+	public void purchaseButtonAction(){
+		purchaseButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null ){
+				windowListener.purchaseButtonClicked(ev);
 			}
 		});
 	}
