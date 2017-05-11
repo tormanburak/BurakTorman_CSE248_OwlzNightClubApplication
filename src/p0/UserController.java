@@ -24,6 +24,10 @@ public class UserController {
 	private Set<Event> allEventsSet = new HashSet<Event>();
 	private Event event;
 	private ArrayList<Ticket> ticketArrayList;
+	private ArrayList<Ticket> customerTicketArrayList;
+	private ArrayList<Event> eventList;
+	private ObservableList<Event> events;
+
 
 	private String userDataFile = "data.dat";
 
@@ -166,12 +170,19 @@ public class UserController {
 	public void mainMenuViewMethods() {
 		mainView.setWindowListener(new MyMainWindowListener() {
 
+
 			@Override
 			public void profileMenuItemClicked(MyWindowEvent ev) {
 				if (user.hasProfile() && user instanceof Customer) {
-					mainView.showCustomerGridPane();
+					mainView.showCustomerMyProfile();
+					Customer user1 = (Customer)(user);
+					mainView.setCustomerMyProfileFields(user1.getName(), user1.getLastName(), user1.getBirthday(),
+							user1.getPhoneNumber(), user1.getAddress(), user1.getZip());
+					
 				} else if (user.hasProfile() && user instanceof Establishment) {
-					mainView.showEstablishmentGridPane();
+					mainView.showEstablishmentMyProfile();
+					Establishment user2 = (Establishment)(user);
+					mainView.setEstablishmentMyProfileFields(user2.getName(), user2.getPhoneNumber(), user2.getAddress(), user2.getZip(), user2.getType());
 				}
 
 			}
@@ -194,15 +205,11 @@ public class UserController {
 			@Override
 			public void cancelButtonClicked(MyWindowEvent ev) {
 				if (user.hasProfile() && user instanceof Customer) {
-					ArrayList<Event> eventList = getAllEvents();
-					ObservableList<Event> events = FXCollections.observableArrayList(eventList);
+					 eventList = getAllEvents();
+					 events = FXCollections.observableArrayList(eventList);
 					
 					mainView.showCustomerView();
-					if(eventList.isEmpty()){
-						loginView.showAlert("No events at this moment");
-					}else{
-					mainView.showAllEvents(events);
-					}
+					showAllEvents();
 					
  				} else if (user.hasProfile() && user instanceof Establishment) {
 					mainView.showEstablishmentView();
@@ -226,7 +233,11 @@ public class UserController {
 				if (customerType.equals("customer")) {
 					user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
 							address, zip);
+					 eventList = getAllEvents();
+					 events = FXCollections.observableArrayList(eventList);
+					
 					mainView.showCustomerView();
+					showAllEvents();
 
 				} else if (customerType.equals("establishment")) {
 					user = new Establishment(user.getId(), user.getPassword(), name, phoneNumber, address, zip, type);
@@ -320,14 +331,33 @@ public class UserController {
 			public void purchaseButtonClicked(MyWindowEvent ev) {
 				int total = mainView.calculateTicketPrice();
 				int ticketAmount = mainView.getTicketAmountPurchased();
+				
+//				Customer user1 = (Customer)(user);
+//				Event customersEvent = new Event();
+//				
+//				customersEvent.setTicket(String.valueOf(total));
+//				customersEvent.createTicketArrayList(ticketAmount);
+//				customerTicketArrayList = customersEvent.getTicketArrayList();
+//				customersEvent.setTicketArrayList(customerTicketArrayList);
+				
 				 if (ticketAmount > event.getTicketArrayList().size()) {
 					loginView.showAlert(
 							"There are " + event.getTicketArrayList().size() + " tickets left for this event");
 				} else {
 					loginView.showAlert("You have purchased " + ticketAmount + " tickets. Your total is = $" + total);
 					removeTicketsFromArrayList(event, ticketAmount);
+					
+//					if (user1.getEventSet() == null) {
+//						Set<Event> eventSet = new HashSet<Event>();
+//						eventSet.add(customersEvent);
+//						user1.setEventSet(eventSet);
+//
+//					} else {
+//						user1.putToSet(customersEvent);
+//					}
 				}
-
+				 
+				writeUserSetFile(userSet);
 				writeEventsSetFile(allEventsSet);
 				System.out.println(total);
 				System.out.println(event.getTicketArrayList().size());
@@ -336,8 +366,37 @@ public class UserController {
 
 			@Override
 			public void historyMenuItemClicked(MyWindowEvent ev) {
-				// TODO Auto-generated method stub
+				if(user instanceof Customer){
+				mainView.showCustomerTransactionHistory();
+				System.out.println(((Customer) user).getEventSet());
+				}
 
+			}
+
+			@Override
+			public void updateButtonClicked(MyWindowEvent ev) {
+				String[] userInfo = mainView.getUserInfo();
+
+				if(user instanceof Customer){
+				user.setName(userInfo[0]);
+				((Customer) user).setLastName(userInfo[1]);
+				((Customer) user).setBirthday(userInfo[2]);
+				user.setPhoneNumber(userInfo[3]);
+				user.setAddress(userInfo[4]);
+				user.setZip(userInfo[5]);
+	
+				}
+				if(user instanceof Establishment){
+					user.setName(userInfo[0]);
+					user.setPhoneNumber(userInfo[3]);
+					user.setAddress(userInfo[4]);
+					user.setZip(userInfo[5]);
+					((Establishment) user).setType(userInfo[6]);
+				}
+				System.out.println(user.toString());
+				loginView.showAlert("Your information has been updated");
+				writeUserSetFile(userSet);
+				
 			}
 		});
 	}
@@ -455,6 +514,13 @@ public class UserController {
 	public void removeTicketsFromArrayList(Event event, int amount) {
 		event.removeTicketsArrayList(amount);
 
+	}
+	public void showAllEvents(){
+		if(eventList.isEmpty()){
+			loginView.showAlert("No events at this moment");
+		}else{
+		mainView.showAllEvents(events);
+		}
 	}
 
 	public User findUser(MyWindowEvent v) {

@@ -89,7 +89,7 @@ public class Event implements Serializable{
 	public String toString() {
 		return "Event Name = " + eventName + " |Event Address = " + eventAddress + " |Event ZIP = " + eventZIP
 				+ " |Event Type = " + eventType + " |Event Start-Time = " + eventStartTime + " |Tickets Available = "
-				+ ticketArrayList.size()+ " |Ticket price = "+ticket.getPrice()+"";
+				+ ticketArrayList.size()+ " |Ticket price = $"+ticket.getPrice()+"";
 	}
 
 	public Ticket getTicket() {

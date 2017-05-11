@@ -27,6 +27,8 @@ public interface MyMainWindowListener extends EventListener {
 	public void purchaseButtonClicked(MyWindowEvent ev);
 
 	public void historyMenuItemClicked(MyWindowEvent ev);
+
+	public void updateButtonClicked(MyWindowEvent ev);
 	
 
 

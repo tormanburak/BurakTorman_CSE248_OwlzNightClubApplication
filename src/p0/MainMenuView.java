@@ -72,6 +72,7 @@ public class MainMenuView {
 
 	
 	private Button submitButton = new Button("Submit");
+	private Button updateButton = new Button("Update");
 	private Button cancelButton = new Button("Cancel");
 	private Button eventSetButton;
 	private Button searchEventButton;
@@ -95,6 +96,8 @@ public class MainMenuView {
 	private String eventZIP;
 	private TextField priceField;
 	private ComboBox<Integer> ticketComboBox;
+	private Button returnButton;
+	private ListView<Event> historyListView;
 
 
 	
@@ -125,22 +128,7 @@ public class MainMenuView {
 		
 	}
 
-	public void setWindowListener(MyMainWindowListener windowListener) {
-		this.windowListener = windowListener;
-	}
 	
-	public void showAlert(String message){
-		messageAlert = new Alert(AlertType.INFORMATION);
-		messageAlert.setTitle("Information Dialog");
-		messageAlert.setHeaderText(null);
-		messageAlert.setContentText(message);
-		messageAlert.showAndWait();
-		
-	}
-	public boolean fieldsEmpty(){
-		return false;
-	}
-
 	public GridPane createProfileGridPane(){
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(5));
@@ -235,79 +223,90 @@ public class MainMenuView {
 		return gridPane;
 		
 	}
-	public void showProfileGridPane(){
-		borderPane.setCenter(createProfileGridPane());
-	}
-	public void showCustomerGridPane(){
-		borderPane.setCenter(customerCreateProfileView());
-	}
-	public void showEstablishmentGridPane(){
-		borderPane.setCenter(establishmentCreateProfileView());
-	}
-	public void radioButtonsSetAction(){
-		customerRadioButton.setOnAction(e->{
-			MyWindowEvent ev = new MyWindowEvent(this);
-			if(windowListener != null) {
-				windowListener.cutomerRadioButtonClicked(ev);		
-			}	
-		});
-		establishmentRadioButton.setOnAction(e->{
-			MyWindowEvent ev = new MyWindowEvent(this);
-			if(windowListener != null) {
-				windowListener.establishmentRadioButtonClicked(ev);		
-			}	
-		});	
-	}
-	public void cancelButtonSetOnAction(){
-		cancelButton.setOnAction(e->{
-			MyWindowEvent ev = new MyWindowEvent(this);
-			if(windowListener != null) {
-				windowListener.cancelButtonClicked(ev);
-			}	
-		});
-	}
-	public void submitButtonSetOnAction(){
-		submitButton.setOnAction(e->{
-			MyWindowEvent ev = new MyWindowEvent(this);
-			if(windowListener != null) {
-				windowListener.submitButtonClicked(ev);
-			}	
-		});
-	}
-	public String[] getUserInfo(){
-		userInfo[0] = nameField.getText();
-		userInfo[1] = lastNameField.getText();
-		userInfo[2] = birthDayField.getText();
-		userInfo[3] = phoneNumberField.getText();
-		userInfo[4] = addressField.getText();
-		userInfo[5] = zipField.getText();
-		userInfo[6] = typeField.getText();
+	public GridPane customerMyProfileView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(10);
+		
+		
+		VBox labelBox = new VBox(20);
+		labelBox.setAlignment(Pos.CENTER);		
+		labelBox.getChildren().addAll(nameLabel,lastNameLabel,birthDayLabel,phoneNumberLabel,addressLabel,zipLabel);
+		
+		VBox fieldBox = new VBox(10);
+		fieldBox.setAlignment(Pos.CENTER);
+		fieldBox.getChildren().addAll(nameField,lastNameField,birthDayField,phoneNumberField,addressField,zipField);
+		
+		cancelButtonSetOnAction();
+		updateButtonSetOnAction();
 
-		return userInfo;
+		gridPane.add(labelBox, 0, 0);
+		gridPane.add(fieldBox, 1, 0);
+		gridPane.add(cancelButton, 2, 1);
+		gridPane.add(updateButton, 3, 1);
+
+		return gridPane;
 		
 	}
-	public String[] getEventInfo(){
-		eventInfo[0] = eventNameField.getText();
-		eventInfo[1] = eventAddressField.getText();
-		eventInfo[2] = eventZIPField.getText();
-		eventInfo[3] = eventTypeField.getText();
-		eventInfo[4] = eventStartTimeField.getText();
-		return eventInfo;
+	
+	public GridPane establishmentMyProfileView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(10);
+		
+		Label nameLabel = new Label("Establishment Name");
+		
+		VBox labelBox = new VBox(20);
+		labelBox.setAlignment(Pos.CENTER);		
+		labelBox.getChildren().addAll(nameLabel,phoneNumberLabel,addressLabel,zipLabel,typeLabel);
+		
+		VBox fieldBox = new VBox(10);
+		fieldBox.setAlignment(Pos.CENTER);
+		fieldBox.getChildren().addAll(nameField,phoneNumberField,addressField,zipField,typeField);
+		
+		cancelButtonSetOnAction();
+		updateButtonSetOnAction();
+		
+		gridPane.add(labelBox, 0, 0);
+		gridPane.add(fieldBox, 1, 0);
+		gridPane.add(cancelButton, 2, 1);
+		gridPane.add(updateButton, 3, 1);
+
+		return gridPane;
 		
 	}
-	public int getTicketAmount(){
-		int ticketAmount = Integer.parseInt(ticketAmountField.getText());
-		return ticketAmount;
+	public GridPane customerTransactionHistoryView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(20);
+		
+		Label info = new Label("All recently booked events");	
+		info.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 20));
+
+		historyListView = new ListView<Event>();
+		historyListView.setPrefWidth(600);
+		returnButton = new Button("Return Ticket");
+	
+		HBox buttonBox = new HBox(10);
+		buttonBox.getChildren().addAll(cancelButton,returnButton);
+		
+		gridPane.add(info, 0, 1);
+		gridPane.add(historyListView, 0, 4,10,10);
+		gridPane.add(buttonBox, 3, 16);
+		
+		cancelButtonSetOnAction();
+
+		return gridPane;
+		
 	}
-	public String getTicketPrice(){
-		return ticketPriceField.getText();
-	}
-	public String getEventZip(){
-		return eventZIP = searchEventField.getText();
-	}
-	/**
-	 * 
-	 */
+	
+	
 	public void showCustomerView(){
 		borderPane = new BorderPane();
 		
@@ -341,6 +340,7 @@ public class MainMenuView {
 		borderPane.setTop(menuBar);
 		borderPane.setCenter(gridPane);
 		
+		historyMenuItemAction();
 		eventSearchMenuItemAction();
 		profileMenuItemAction();
 				
@@ -510,6 +510,10 @@ public class MainMenuView {
 		return gridPane;
 		
 	}
+	
+	//-----------------------------------------------------------------------------------------------------------------------------------------------------------
+	//below this line includes all methods for buttons, menu items, etc.
+	
 	public int getTicketAmountPurchased(){
 		int ticketQuantity = ticketComboBox.getValue();
 		
@@ -565,8 +569,8 @@ public class MainMenuView {
 			
 		});
 	}
-	public void HistoryMenuItemAction(){
-		profileMenuItem.setOnAction(e->{
+	public void historyMenuItemAction(){
+		historyMenuItem.setOnAction(e->{
 			MyWindowEvent ev = new MyWindowEvent(this);
 			if(windowListener != null) {
 				windowListener.historyMenuItemClicked(ev);			
@@ -615,5 +619,127 @@ public class MainMenuView {
 			}
 		});
 	}
+	public void setWindowListener(MyMainWindowListener windowListener) {
+		this.windowListener = windowListener;
+	}
+	
+	public void showAlert(String message){
+		messageAlert = new Alert(AlertType.INFORMATION);
+		messageAlert.setTitle("Information Dialog");
+		messageAlert.setHeaderText(null);
+		messageAlert.setContentText(message);
+		messageAlert.showAndWait();
+		
+	}
+	public boolean fieldsEmpty(){
+		return false;
+	}
+	public void showProfileGridPane(){
+		borderPane.setCenter(createProfileGridPane());
+	}
+	public void showCustomerGridPane(){
+		borderPane.setCenter(customerCreateProfileView());
+	}
+	public void showEstablishmentGridPane(){
+		borderPane.setCenter(establishmentCreateProfileView());
+	}
+	public void showCustomerMyProfile(){
+		borderPane.setCenter(customerMyProfileView());
+	}
+	public void showEstablishmentMyProfile(){
+		borderPane.setCenter(establishmentMyProfileView());
+	}
+	public void showCustomerTransactionHistory(){
+		borderPane.setCenter(customerTransactionHistoryView());
+	}
+	public void radioButtonsSetAction(){
+		customerRadioButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.cutomerRadioButtonClicked(ev);		
+			}	
+		});
+		establishmentRadioButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.establishmentRadioButtonClicked(ev);		
+			}	
+		});	
+	}
+	public void cancelButtonSetOnAction(){
+		cancelButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.cancelButtonClicked(ev);
+			}	
+		});
+	}
+	public void submitButtonSetOnAction(){
+		submitButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.submitButtonClicked(ev);
+			}	
+		});
+	}
+	public void updateButtonSetOnAction(){
+		updateButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.updateButtonClicked(ev);
+			}	
+		});
+	}
+	public void setCustomerMyProfileFields(String name,String lastName, String birthDay, String phoneNumber,String address,String zip){
+		nameField.setText(name);
+		lastNameField.setText(lastName);
+		birthDayField.setText(birthDay);
+		phoneNumberField.setText(phoneNumber);
+		addressField.setText(address);
+		zipField.setText(zip);
+	}
+	public void setEstablishmentMyProfileFields(String name,String phoneNumber,String address, String zip, String type){
+		nameField.setText(name);
+		phoneNumberField.setText(phoneNumber);
+		addressField.setText(address);
+		zipField.setText(zip);
+		typeField.setText(type);
+	}
+	
+	public String[] getUserInfo(){
+		userInfo[0] = nameField.getText();
+		userInfo[1] = lastNameField.getText();
+		userInfo[2] = birthDayField.getText();
+		userInfo[3] = phoneNumberField.getText();
+		userInfo[4] = addressField.getText();
+		userInfo[5] = zipField.getText();
+		userInfo[6] = typeField.getText();
+
+		return userInfo;
+		
+	}
+	public String[] getEventInfo(){
+		eventInfo[0] = eventNameField.getText();
+		eventInfo[1] = eventAddressField.getText();
+		eventInfo[2] = eventZIPField.getText();
+		eventInfo[3] = eventTypeField.getText();
+		eventInfo[4] = eventStartTimeField.getText();
+		return eventInfo;
+		
+	}
+	public int getTicketAmount(){
+		int ticketAmount = Integer.parseInt(ticketAmountField.getText());
+		return ticketAmount;
+	}
+	public String getTicketPrice(){
+		return ticketPriceField.getText();
+	}
+	public String getEventZip(){
+		return eventZIP = searchEventField.getText();
+	}
+	/**
+	 * 
+	 */
+
 }
 
