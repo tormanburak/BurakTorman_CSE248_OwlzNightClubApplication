@@ -98,6 +98,8 @@ public class MainMenuView {
 	private ComboBox<Integer> ticketComboBox;
 	private Button returnButton;
 	private ListView<Event> historyListView;
+	private Button confirmButton;
+	private TextField ticketReturningAmountField;
 
 
 	
@@ -300,6 +302,7 @@ public class MainMenuView {
 		gridPane.add(historyListView, 0, 4,10,10);
 		gridPane.add(buttonBox, 3, 16);
 		
+		returnButtonSetOnAction();
 		cancelButtonSetOnAction();
 
 		return gridPane;
@@ -510,10 +513,40 @@ public class MainMenuView {
 		return gridPane;
 		
 	}
+	public GridPane returnTicketView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(20);
+		
+		Label ticketLabel = new Label("Ticket Quantity Returning");
+		priceField = new TextField();
+		priceField.setEditable(false);
+		 ticketReturningAmountField = new TextField();
+		confirmButton = new Button("Confirm");
+		
+		
+		HBox buttonBox = new HBox(10);
+		buttonBox.getChildren().addAll(cancelButton,confirmButton);
+		
+		gridPane.add(ticketLabel, 0, 1);
+		gridPane.add(ticketReturningAmountField, 1, 1);
+		gridPane.add(buttonBox, 2, 3);
+	
+		cancelButtonSetOnAction();
+		confirmButtonSetOnAction();
+		
+		return gridPane;
+		
+	}
 	
 	//-----------------------------------------------------------------------------------------------------------------------------------------------------------
 	//below this line includes all methods for buttons, menu items, etc.
-	
+	public int getTicketReturningAmount(){
+		int ticketQuantity = Integer.valueOf(ticketReturningAmountField.getText());
+		return ticketQuantity;
+	}
 	public int getTicketAmountPurchased(){
 		int ticketQuantity = ticketComboBox.getValue();
 		
@@ -539,11 +572,18 @@ public class MainMenuView {
 		Event event = new Event();
 		return event = eventListView.getSelectionModel().getSelectedItem();
 	}
+	public Event getHistoryListViewItems(){
+		Event event = new Event();
+		return event = historyListView.getSelectionModel().getSelectedItem();
+	}
 	public void showFoundEvents(ObservableList<Event> event){
 		eventListView.setItems(event);
 	}
 	public void showAllEvents(ObservableList<Event> event){
 		customerAllEventListView.setItems(event);
+	}
+	public void showCustomerHistory(ObservableList<Event> event){
+		historyListView.setItems(event);
 	}
 	public void showEventCreateView(){
 		borderPane.setCenter(eventCreateView());
@@ -652,6 +692,9 @@ public class MainMenuView {
 	public void showCustomerTransactionHistory(){
 		borderPane.setCenter(customerTransactionHistoryView());
 	}
+	public void showCustomerReturnView(){
+		borderPane.setCenter(returnTicketView());
+	}
 	public void radioButtonsSetAction(){
 		customerRadioButton.setOnAction(e->{
 			MyWindowEvent ev = new MyWindowEvent(this);
@@ -687,6 +730,22 @@ public class MainMenuView {
 			MyWindowEvent ev = new MyWindowEvent(this);
 			if(windowListener != null) {
 				windowListener.updateButtonClicked(ev);
+			}	
+		});
+	}
+	public void returnButtonSetOnAction(){
+		returnButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.returnButtonClicked(ev);
+			}	
+		});
+	}
+	public void confirmButtonSetOnAction(){
+		confirmButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.confirmButtonClicked(ev);
 			}	
 		});
 	}

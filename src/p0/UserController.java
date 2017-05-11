@@ -23,6 +23,7 @@ public class UserController {
 	private Set<User> userSet = new HashSet<User>();
 	private Set<Event> allEventsSet = new HashSet<Event>();
 	private Event event;
+	private Event returnEvent;
 	private ArrayList<Ticket> ticketArrayList;
 	private ArrayList<Ticket> customerTicketArrayList;
 	private ArrayList<Event> eventList;
@@ -169,6 +170,7 @@ public class UserController {
 
 	public void mainMenuViewMethods() {
 		mainView.setWindowListener(new MyMainWindowListener() {
+
 
 
 			@Override
@@ -332,43 +334,48 @@ public class UserController {
 				int total = mainView.calculateTicketPrice();
 				int ticketAmount = mainView.getTicketAmountPurchased();
 				
-//				Customer user1 = (Customer)(user);
-//				Event customersEvent = new Event();
-//				
-//				customersEvent.setTicket(String.valueOf(total));
-//				customersEvent.createTicketArrayList(ticketAmount);
-//				customerTicketArrayList = customersEvent.getTicketArrayList();
-//				customersEvent.setTicketArrayList(customerTicketArrayList);
+				Customer customer = (Customer)(user);
+				Event customerEvent = new Event();
+				setCustomersEventInfo(customerEvent,String.valueOf(total),ticketAmount);
+				customerTicketArrayList = customerEvent.getTicketArrayList();
 				
+				if(customer.getEventSet() == null){
+				Set<Event> eventSet = new HashSet<Event>();
+				eventSet.add(customerEvent);
+				customer.setEventSet(eventSet);
+				
+				}else{
+					customer.putToSet(customerEvent);
+				}
 				 if (ticketAmount > event.getTicketArrayList().size()) {
 					loginView.showAlert(
 							"There are " + event.getTicketArrayList().size() + " tickets left for this event");
 				} else {
+
 					loginView.showAlert("You have purchased " + ticketAmount + " tickets. Your total is = $" + total);
 					removeTicketsFromArrayList(event, ticketAmount);
 					
-//					if (user1.getEventSet() == null) {
-//						Set<Event> eventSet = new HashSet<Event>();
-//						eventSet.add(customersEvent);
-//						user1.setEventSet(eventSet);
-//
-//					} else {
-//						user1.putToSet(customersEvent);
-//					}
+					
+
 				}
-				 
+				System.out.println(customer.getEventSet());
 				writeUserSetFile(userSet);
 				writeEventsSetFile(allEventsSet);
-				System.out.println(total);
-				System.out.println(event.getTicketArrayList().size());
+				//System.out.println(total);
+				//System.out.println(event.getTicketArrayList().size());
+				//System.out.println(customer.getEventSet());
+
 
 			}
 
 			@Override
 			public void historyMenuItemClicked(MyWindowEvent ev) {
 				if(user instanceof Customer){
+				ArrayList<Event> eventList = getCustomerEvents();
+				ObservableList<Event> events = FXCollections.observableArrayList(eventList);
 				mainView.showCustomerTransactionHistory();
-				System.out.println(((Customer) user).getEventSet());
+				//System.out.println(((Customer) user).getEventSet());
+				mainView.showCustomerHistory(events);
 				}
 
 			}
@@ -396,6 +403,33 @@ public class UserController {
 				System.out.println(user.toString());
 				loginView.showAlert("Your information has been updated");
 				writeUserSetFile(userSet);
+				
+			}
+
+			@Override
+			public void returnButtonClicked(MyWindowEvent ev) {
+				returnEvent = mainView.getHistoryListViewItems();
+				event = findEvent(returnEvent);
+				mainView.showCustomerReturnView();
+				System.out.println(event);
+			}
+
+			@Override
+			public void confirmButtonClicked(MyWindowEvent ev) {
+				
+				int returningTickets = mainView.getTicketReturningAmount();
+				int size =  returnEvent.getTicketArrayList().size();
+				int total = returningTickets * Integer.valueOf(event.getTicket().getPrice());
+				if(returningTickets >size){
+					loginView.showAlert("You have "+size+" tickets, you can not return "+returningTickets+" tickets.");
+				}else{
+					returnEvent.removeTicketsArrayList(returningTickets);
+					event.addToTicketsArrayList(returningTickets);
+					loginView.showAlert("You have returned "+returningTickets+" tickets, Your total refund is $"+total+"\nThank you.");
+				}
+				writeUserSetFile(userSet);
+				writeEventsSetFile(allEventsSet);
+
 				
 			}
 		});
@@ -483,6 +517,21 @@ public class UserController {
 		return eventList;
 
 	}
+	public Event findEvent(Event event) {
+		Event[] array = new Event[allEventsSet.size()];
+		allEventsSet.toArray(array);
+		Event getEvent = new Event();
+
+		for (int i = 0; i < array.length; i++) {
+			if (array[i].getEventZIP().equals(event.getEventZIP()) && 
+				array[i].getEventName().equals(event.getEventName()) &&
+				array[i].getEventStartTime().equals(event.getEventStartTime())) {
+				getEvent = array[i];
+			}
+		}
+		return getEvent;
+
+	}
 
 	public ArrayList<Event> getAllEvents() {
 		Event[] array = new Event[allEventsSet.size()];
@@ -496,6 +545,30 @@ public class UserController {
 		}
 		return eventList;
 
+	}
+	public ArrayList<Event> getCustomerEvents() {
+		Customer customer = (Customer)(user);
+		Event[] array = new Event[customer.getEventSet().size()];
+		customer.getEventSet().toArray(array);
+		ArrayList<Event> eventList = new ArrayList<Event>();
+
+		for (int i = 0; i < array.length; i++) {
+
+			eventList.add(array[i]);
+
+		}
+		return eventList;
+
+	}
+	public void setCustomersEventInfo(Event customerEvent, String total,int ticketAmount){
+		
+		customerEvent.setEventName(event.getEventName());
+		customerEvent.setEventAddress(event.getEventAddress());
+		customerEvent.setEventZIP(event.getEventZIP());
+		customerEvent.setEventType(event.getEventType());
+		customerEvent.setEventStartTime(event.getEventStartTime());
+		customerEvent.setTicket(String.valueOf(total));
+		customerEvent.createTicketArrayList(ticketAmount);
 	}
 
 	public void addUser(User user) {
