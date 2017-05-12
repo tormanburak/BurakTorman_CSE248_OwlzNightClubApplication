@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -97,9 +98,15 @@ public class MainMenuView {
 	private TextField priceField;
 	private ComboBox<Integer> ticketComboBox;
 	private Button returnButton;
-	private ListView<Event> historyListView;
+	private ListView<Event> customerHistoryListView;
 	private Button confirmButton;
 	private TextField ticketReturningAmountField;
+	private ListView<Event> establishmentMyEventListView;
+	private Button infoButton;
+	private ListView<Event> establishmentHistoryListView;
+	private ListView<Event> myCustomersListView;
+	private TextField ticketSoldField;
+	private TextField netProfitField;
 
 
 	
@@ -291,15 +298,15 @@ public class MainMenuView {
 		Label info = new Label("All recently booked events");	
 		info.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 20));
 
-		historyListView = new ListView<Event>();
-		historyListView.setPrefWidth(600);
+		customerHistoryListView = new ListView<Event>();
+		customerHistoryListView.setPrefWidth(600);
 		returnButton = new Button("Return Ticket");
 	
 		HBox buttonBox = new HBox(10);
 		buttonBox.getChildren().addAll(cancelButton,returnButton);
 		
 		gridPane.add(info, 0, 1);
-		gridPane.add(historyListView, 0, 4,10,10);
+		gridPane.add(customerHistoryListView, 0, 4,10,10);
 		gridPane.add(buttonBox, 3, 16);
 		
 		returnButtonSetOnAction();
@@ -308,12 +315,84 @@ public class MainMenuView {
 		return gridPane;
 		
 	}
+	public GridPane establishmentHistoryView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(20);
+		
+		Label info = new Label("All created events by me");	
+		info.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 20));
+
+		establishmentHistoryListView = new ListView<Event>();
+		establishmentHistoryListView.setPrefWidth(600);
+		infoButton = new Button("More Info");
+	
+		HBox buttonBox = new HBox(10);
+		buttonBox.getChildren().addAll(cancelButton,infoButton);
+		
+		gridPane.add(info, 0, 1);
+		gridPane.add(establishmentHistoryListView, 0, 4,10,10);
+		gridPane.add(buttonBox, 3, 16);
+		
+
+		cancelButtonSetOnAction();
+		infoButtonSetOnAction();
+		
+		return gridPane;
+		
+	}
+	public GridPane establishmentInfoView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(20);
+		
+		Label info = new Label("My Customers for this event");
+		Label ticketsSold = new Label("Total tickets sold");
+		Label netProfit = new Label("Net Profit");
+		ticketSoldField = new TextField();
+		ticketSoldField.setEditable(false);
+		netProfitField = new TextField();
+		netProfitField.setEditable(false);
+		
+		info.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 20));
+
+		myCustomersListView = new ListView<Event>();
+		myCustomersListView.setPrefWidth(600);
+		
+	
+		HBox buttonBox = new HBox(10);
+		buttonBox.getChildren().addAll(cancelButton);
+		VBox ticketSoldBox = new VBox(10);
+		ticketSoldBox.getChildren().addAll(ticketsSold,netProfit);
+		VBox profitBox = new VBox(10);
+		profitBox.getChildren().addAll(ticketSoldField,netProfitField);
+		HBox addAll = new HBox(10);
+		addAll.getChildren().addAll(ticketSoldBox,profitBox);
+		
+		gridPane.add(info, 0, 1);
+		gridPane.add(addAll,0,16);
+
+		
+		gridPane.add(myCustomersListView, 0, 4,10,10);
+		gridPane.add(buttonBox, 3, 16);
+		
+
+		cancelButtonSetOnAction();
+		infoButtonSetOnAction();
+		
+		return gridPane;
+		
+	}
 	
 	
 	public void showCustomerView(){
 		borderPane = new BorderPane();
 		
-		gridPane = new GridPane();
+		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.CENTER);
 		gridPane.setPadding(new Insets(10));
 		gridPane.setHgap(5);
@@ -360,8 +439,8 @@ public class MainMenuView {
 	public void showEstablishmentView(){
 		borderPane = new BorderPane();
 		
-		gridPane = new GridPane();
-		gridPane.setAlignment(Pos.BOTTOM_CENTER);
+		GridPane gridPane = new GridPane();
+		gridPane.setAlignment(Pos.CENTER);
 		gridPane.setPadding(new Insets(10));
 		gridPane.setHgap(5);
 		gridPane.setVgap(10);
@@ -370,6 +449,9 @@ public class MainMenuView {
 		menuBar.prefWidthProperty().bind(stage.widthProperty());
 		profileMenu = new Menu("Profile");
 		eventMenu = new Menu("Event");
+		establishmentMyEventListView = new ListView<Event>();
+		establishmentMyEventListView.setPrefWidth(600);
+		establishmentMyEventListView.setPrefHeight(600);
 		
 		historyMenuItem = new MenuItem("History");
 		profileMenuItem = new MenuItem("Profile");
@@ -378,13 +460,19 @@ public class MainMenuView {
 		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem);
 		eventMenu.getItems().add(createEventMenuItem);
 		menuBar.getMenus().addAll(profileMenu,eventMenu);
+		Label infoLabel = new Label("My Events");
+		infoLabel.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 40));
+
+		gridPane.add(establishmentMyEventListView, 0,1);
+		gridPane.add(infoLabel, 0, 0);
 		
 		borderPane.setTop(menuBar);
 		borderPane.setCenter(gridPane);
 		
 		profileMenuItemAction();
 		createEventMenuItemAction();
-				
+		historyMenuItemAction();
+		
 		Group root = new Group();
 		scene = new Scene(root,900,800,Color.DEEPPINK);
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
@@ -574,7 +662,7 @@ public class MainMenuView {
 	}
 	public Event getHistoryListViewItems(){
 		Event event = new Event();
-		return event = historyListView.getSelectionModel().getSelectedItem();
+		return event = customerHistoryListView.getSelectionModel().getSelectedItem();
 	}
 	public void showFoundEvents(ObservableList<Event> event){
 		eventListView.setItems(event);
@@ -582,8 +670,17 @@ public class MainMenuView {
 	public void showAllEvents(ObservableList<Event> event){
 		customerAllEventListView.setItems(event);
 	}
+	public void showEstablishmentEvents(ObservableList<Event> event){
+		establishmentMyEventListView.setItems(event);
+	}
 	public void showCustomerHistory(ObservableList<Event> event){
-		historyListView.setItems(event);
+		customerHistoryListView.setItems(event);
+	}
+	public void showEstablishmentHistory(ObservableList<Event> event){
+		establishmentHistoryListView.setItems(event);
+	}
+	public void showMyCustomerList(ObservableList<Event> event){
+		myCustomersListView.setItems(event);
 	}
 	public void showEventCreateView(){
 		borderPane.setCenter(eventCreateView());
@@ -695,6 +792,12 @@ public class MainMenuView {
 	public void showCustomerReturnView(){
 		borderPane.setCenter(returnTicketView());
 	}
+	public void showEstablishmentHistoryView(){
+		borderPane.setCenter(establishmentHistoryView());
+	}
+	public void showEstablishmentInfoView(){
+		borderPane.setCenter(establishmentInfoView());
+	}
 	public void radioButtonsSetAction(){
 		customerRadioButton.setOnAction(e->{
 			MyWindowEvent ev = new MyWindowEvent(this);
@@ -746,6 +849,14 @@ public class MainMenuView {
 			MyWindowEvent ev = new MyWindowEvent(this);
 			if(windowListener != null) {
 				windowListener.confirmButtonClicked(ev);
+			}	
+		});
+	}
+	public void infoButtonSetOnAction(){
+		infoButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.infoButtonClicked(ev);
 			}	
 		});
 	}

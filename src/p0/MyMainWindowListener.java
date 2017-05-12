@@ -33,6 +33,8 @@ public interface MyMainWindowListener extends EventListener {
 	public void returnButtonClicked(MyWindowEvent ev);
 
 	public void confirmButtonClicked(MyWindowEvent ev);
+
+	public void infoButtonClicked(MyWindowEvent ev);
 	
 
 

@@ -152,7 +152,17 @@ public class UserController {
 							mainView.showAllEvents(events);
 							}
 						} else if (user.hasProfile() && user instanceof Establishment) {
+							
+							ArrayList<Event> eventList = getEstablishmentEvents();
+							ObservableList<Event> events = FXCollections.observableArrayList(eventList);
+							
 							mainView.showEstablishmentView();
+							if(eventList.isEmpty()){
+								loginView.showAlert("You have no events at this moment");
+							}else{
+								
+							mainView.showEstablishmentEvents(events);
+							}
 						}
 
 						else {
@@ -214,7 +224,11 @@ public class UserController {
 					showAllEvents();
 					
  				} else if (user.hasProfile() && user instanceof Establishment) {
+ 					 eventList = getEstablishmentEvents();
+					 events = FXCollections.observableArrayList(eventList);
+					 
 					mainView.showEstablishmentView();
+					showEstablishmentEvents();
 				} else {
 					mainView.showIntroView();
 				}
@@ -289,7 +303,7 @@ public class UserController {
 				writeUserSetFile(userSet);
 				allEventsSet.add(event);
 				writeEventsSetFile(allEventsSet);
-				System.out.println(event.toString());
+				//System.out.println(event.toString());
 				// System.out.println(establishment.getEventSet());
 
 			}
@@ -324,7 +338,7 @@ public class UserController {
 					mainView.showPurchaseView();
 					mainView.setTicketPrice(event.getTicket().getPrice());
 					System.out.println(event.toString());
-
+					
 				}
 
 			}
@@ -335,9 +349,15 @@ public class UserController {
 				int ticketAmount = mainView.getTicketAmountPurchased();
 				
 				Customer customer = (Customer)(user);
+				Establishment establishment = new Establishment();
+				establishment = (Establishment) findEstablishment(event);
+				Event estEvent = findEstEvent(establishment,event);
+				
 				Event customerEvent = new Event();
+				
 				setCustomersEventInfo(customerEvent,String.valueOf(total),ticketAmount);
 				customerTicketArrayList = customerEvent.getTicketArrayList();
+				
 				
 				if(customer.getEventSet() == null){
 				Set<Event> eventSet = new HashSet<Event>();
@@ -354,28 +374,34 @@ public class UserController {
 
 					loginView.showAlert("You have purchased " + ticketAmount + " tickets. Your total is = $" + total);
 					removeTicketsFromArrayList(event, ticketAmount);
+					establishment.removeFromSet(estEvent);
+					establishment.putToSet(event);
 					
-					
-
 				}
-				System.out.println(customer.getEventSet());
 				writeUserSetFile(userSet);
 				writeEventsSetFile(allEventsSet);
-				//System.out.println(total);
-				//System.out.println(event.getTicketArrayList().size());
-				//System.out.println(customer.getEventSet());
 
 
 			}
 
 			@Override
 			public void historyMenuItemClicked(MyWindowEvent ev) {
+				ArrayList<Event> eventList ;
+				ObservableList<Event> events;
+				
 				if(user instanceof Customer){
-				ArrayList<Event> eventList = getCustomerEvents();
-				ObservableList<Event> events = FXCollections.observableArrayList(eventList);
+				eventList = getCustomerEvents();
+				events = FXCollections.observableArrayList(eventList);
 				mainView.showCustomerTransactionHistory();
-				//System.out.println(((Customer) user).getEventSet());
 				mainView.showCustomerHistory(events);
+				}
+				if(user instanceof Establishment){
+					eventList = getEstablishmentEvents();
+					events = FXCollections.observableArrayList(eventList);
+					
+					mainView.showEstablishmentHistoryView();
+					mainView.showEstablishmentHistory(events);
+					
 				}
 
 			}
@@ -420,16 +446,29 @@ public class UserController {
 				int returningTickets = mainView.getTicketReturningAmount();
 				int size =  returnEvent.getTicketArrayList().size();
 				int total = returningTickets * Integer.valueOf(event.getTicket().getPrice());
+				
+				Establishment establishment = new Establishment();
+				establishment = (Establishment) findEstablishment(event);
+				Event estEvent = findEstEvent(establishment,event);
+				
 				if(returningTickets >size){
 					loginView.showAlert("You have "+size+" tickets, you can not return "+returningTickets+" tickets.");
 				}else{
 					returnEvent.removeTicketsArrayList(returningTickets);
 					event.addToTicketsArrayList(returningTickets);
+					establishment.removeFromSet(estEvent);
+					establishment.putToSet(event);
 					loginView.showAlert("You have returned "+returningTickets+" tickets, Your total refund is $"+total+"\nThank you.");
 				}
 				writeUserSetFile(userSet);
 				writeEventsSetFile(allEventsSet);
 
+				
+			}
+
+			@Override
+			public void infoButtonClicked(MyWindowEvent ev) {
+				mainView.showEstablishmentInfoView();
 				
 			}
 		});
@@ -465,7 +504,7 @@ public class UserController {
 			@SuppressWarnings("resource")
 			ObjectInputStream reader = new ObjectInputStream(new FileInputStream("userSet.dat"));
 			userSet = (HashSet<User>) reader.readObject();
-			// printSet();
+			//printSet();
 		} catch (FileNotFoundException e) {
 			System.out.println("Fof exp reading set");
 		} catch (IOException e) {
@@ -481,7 +520,7 @@ public class UserController {
 			@SuppressWarnings("resource")
 			ObjectInputStream reader = new ObjectInputStream(new FileInputStream("allEventsSet.dat"));
 			allEventsSet = (HashSet<Event>) reader.readObject();
-			printSet();
+			//printSet();
 		} catch (FileNotFoundException e) {
 			System.out.println("Fof exp reading set");
 		} catch (IOException e) {
@@ -501,6 +540,35 @@ public class UserController {
 			}
 		}
 		return false;
+
+	}
+	public User findEstablishment(Event event){
+		User[] array = new User[userSet.size()];
+		userSet.toArray(array);
+		Establishment findUser = new Establishment();
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] instanceof Establishment) {
+				findUser = (Establishment)(array[i]);
+				if(findUser.getEventSet().contains(event)){
+					 findUser = (Establishment)array[i];
+				}
+			}
+		}
+		return findUser;
+	}
+	public Event findEstEvent(Establishment est, Event event){
+		Event[] array = new Event[est.getEventSet().size()];
+		est.getEventSet().toArray(array);
+		Event getEvent = new Event();
+
+		for (int i = 0; i < array.length; i++) {
+			if (array[i].getEventZIP().equals(event.getEventZIP()) && 
+				array[i].getEventName().equals(event.getEventName()) &&
+				array[i].getEventStartTime().equals(event.getEventStartTime())) {
+				getEvent = array[i];
+			}
+		}
+		return getEvent;
 
 	}
 
@@ -560,6 +628,20 @@ public class UserController {
 		return eventList;
 
 	}
+	public ArrayList<Event> getEstablishmentEvents() {
+		Establishment establishment = (Establishment)(user);
+		Event[] array = new Event[establishment.getEventSet().size()];
+		establishment.getEventSet().toArray(array);
+		ArrayList<Event> eventList = new ArrayList<Event>();
+
+		for (int i = 0; i < array.length; i++) {
+
+			eventList.add(array[i]);
+
+		}
+		return eventList;
+
+	}
 	public void setCustomersEventInfo(Event customerEvent, String total,int ticketAmount){
 		
 		customerEvent.setEventName(event.getEventName());
@@ -586,13 +668,20 @@ public class UserController {
 
 	public void removeTicketsFromArrayList(Event event, int amount) {
 		event.removeTicketsArrayList(amount);
-
+		
 	}
 	public void showAllEvents(){
 		if(eventList.isEmpty()){
 			loginView.showAlert("No events at this moment");
 		}else{
 		mainView.showAllEvents(events);
+		}
+	}
+	public void showEstablishmentEvents(){
+		if(eventList.isEmpty()){
+			loginView.showAlert("No events at this moment");
+		}else{
+		mainView.showEstablishmentEvents(events);
 		}
 	}
 

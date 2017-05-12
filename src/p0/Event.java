@@ -38,6 +38,7 @@ public class Event implements Serializable{
 		for(int i =0; i<amount; i++){
 			ticketArrayList.add(ticket);
 		}
+
 	}
 	public ArrayList<Ticket> getTicketArrayList(){
 		return ticketArrayList;

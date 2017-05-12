@@ -26,6 +26,9 @@ public class Establishment extends User implements Serializable{
 	public void putToSet(Event event){
 		eventSet.add(event);
 	}
+	public void removeFromSet(Event event){
+		eventSet.remove(event);
+	}
 	public void setType(String type) {
 		this.type = type;
 	}
