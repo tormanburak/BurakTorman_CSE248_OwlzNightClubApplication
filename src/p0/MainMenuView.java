@@ -104,9 +104,11 @@ public class MainMenuView {
 	private ListView<Event> establishmentMyEventListView;
 	private Button infoButton;
 	private ListView<Event> establishmentHistoryListView;
-	private ListView<Event> myCustomersListView;
+	private ListView<Customer> myCustomersListView;
 	private TextField ticketSoldField;
 	private TextField netProfitField;
+	private TextField intialTicketssoldField;
+	private TextField ticketsReturnedField;
 
 
 	
@@ -351,27 +353,38 @@ public class MainMenuView {
 		gridPane.setVgap(20);
 		
 		Label info = new Label("My Customers for this event");
-		Label ticketsSold = new Label("Total tickets sold");
+		Label totalTicketsSold = new Label("Total tickets sold");
+		Label initialTicketsSold = new Label("Initial tickets sold");
+		Label ticketsReturned = new Label("Tickets returned");
 		Label netProfit = new Label("Net Profit");
+		
 		ticketSoldField = new TextField();
 		ticketSoldField.setEditable(false);
 		netProfitField = new TextField();
 		netProfitField.setEditable(false);
+		intialTicketssoldField = new TextField();
+		intialTicketssoldField.setEditable(false);
+		ticketsReturnedField = new TextField();
+		ticketsReturnedField.setEditable(false);
 		
 		info.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 20));
 
-		myCustomersListView = new ListView<Event>();
+		myCustomersListView = new ListView<Customer>();
 		myCustomersListView.setPrefWidth(600);
 		
 	
 		HBox buttonBox = new HBox(10);
 		buttonBox.getChildren().addAll(cancelButton);
+		VBox initalTicketSoldAndReturned = new VBox(10);
+		initalTicketSoldAndReturned.getChildren().addAll(initialTicketsSold,ticketsReturned);
+		VBox initialField = new VBox(10);
+		initialField.getChildren().addAll(intialTicketssoldField,ticketsReturnedField );
 		VBox ticketSoldBox = new VBox(10);
-		ticketSoldBox.getChildren().addAll(ticketsSold,netProfit);
+		ticketSoldBox.getChildren().addAll(totalTicketsSold,netProfit);
 		VBox profitBox = new VBox(10);
 		profitBox.getChildren().addAll(ticketSoldField,netProfitField);
 		HBox addAll = new HBox(10);
-		addAll.getChildren().addAll(ticketSoldBox,profitBox);
+		addAll.getChildren().addAll(initalTicketSoldAndReturned,initialField, ticketSoldBox,profitBox);
 		
 		gridPane.add(info, 0, 1);
 		gridPane.add(addAll,0,16);
@@ -664,6 +677,10 @@ public class MainMenuView {
 		Event event = new Event();
 		return event = customerHistoryListView.getSelectionModel().getSelectedItem();
 	}
+	public Event getEstablishmentHistoryViewItems(){
+		Event event = new Event();
+		return event = establishmentHistoryListView.getSelectionModel().getSelectedItem();
+	}
 	public void showFoundEvents(ObservableList<Event> event){
 		eventListView.setItems(event);
 	}
@@ -679,7 +696,7 @@ public class MainMenuView {
 	public void showEstablishmentHistory(ObservableList<Event> event){
 		establishmentHistoryListView.setItems(event);
 	}
-	public void showMyCustomerList(ObservableList<Event> event){
+	public void showMyCustomerList(ObservableList<Customer> event){
 		myCustomersListView.setItems(event);
 	}
 	public void showEventCreateView(){
@@ -875,6 +892,34 @@ public class MainMenuView {
 		zipField.setText(zip);
 		typeField.setText(type);
 	}
+	public void setFinancialInfo(int initalTicketBought, int ticketsReturned, int totalTicketsSold, int netProfit){
+		String ticketBought = String.valueOf(initalTicketBought);
+		String ticketReturned = String.valueOf(ticketsReturned);
+		String totalSold = String.valueOf(totalTicketsSold);
+		String profit = String.valueOf(netProfit);
+		if(ticketBought == null){
+			intialTicketssoldField.setText("");
+		}
+		if(ticketReturned == null){
+			ticketsReturnedField.setText("");
+
+		}
+		if(totalSold == null){
+			ticketSoldField.setText("");
+
+		}
+		if(profit == null){
+			netProfitField.setText("");
+
+		}
+		else{
+		ticketSoldField.setText(totalSold);
+		netProfitField.setText("$"+profit);
+		intialTicketssoldField.setText(ticketBought);
+		ticketsReturnedField.setText(ticketReturned);
+		}
+	}
+		
 	
 	public String[] getUserInfo(){
 		userInfo[0] = nameField.getText();

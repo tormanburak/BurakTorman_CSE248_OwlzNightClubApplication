@@ -29,7 +29,6 @@ public class UserController {
 	private ArrayList<Event> eventList;
 	private ObservableList<Event> events;
 
-
 	private String userDataFile = "data.dat";
 
 	private static String customerType;
@@ -144,29 +143,29 @@ public class UserController {
 						if (user.hasProfile() && user instanceof Customer) {
 							ArrayList<Event> eventList = getAllEvents();
 							ObservableList<Event> events = FXCollections.observableArrayList(eventList);
-							
+
 							mainView.showCustomerView();
-							if(eventList.isEmpty()){
+							if (eventList.isEmpty()) {
 								loginView.showAlert("No events at this moment");
-							}else{
-							mainView.showAllEvents(events);
+							} else {
+								mainView.showAllEvents(events);
 							}
 						} else if (user.hasProfile() && user instanceof Establishment) {
-							
+
 							ArrayList<Event> eventList = getEstablishmentEvents();
 							ObservableList<Event> events = FXCollections.observableArrayList(eventList);
-							
+
 							mainView.showEstablishmentView();
-							if(eventList.isEmpty()){
+							if (eventList.isEmpty()) {
 								loginView.showAlert("You have no events at this moment");
-							}else{
-								
-							mainView.showEstablishmentEvents(events);
+							} else {
+
+								mainView.showEstablishmentEvents(events);
 							}
 						}
 
 						else {
-							
+
 							mainView.showIntroView();
 						}
 					}
@@ -181,20 +180,19 @@ public class UserController {
 	public void mainMenuViewMethods() {
 		mainView.setWindowListener(new MyMainWindowListener() {
 
-
-
 			@Override
 			public void profileMenuItemClicked(MyWindowEvent ev) {
 				if (user.hasProfile() && user instanceof Customer) {
 					mainView.showCustomerMyProfile();
-					Customer user1 = (Customer)(user);
+					Customer user1 = (Customer) (user);
 					mainView.setCustomerMyProfileFields(user1.getName(), user1.getLastName(), user1.getBirthday(),
 							user1.getPhoneNumber(), user1.getAddress(), user1.getZip());
-					
+
 				} else if (user.hasProfile() && user instanceof Establishment) {
 					mainView.showEstablishmentMyProfile();
-					Establishment user2 = (Establishment)(user);
-					mainView.setEstablishmentMyProfileFields(user2.getName(), user2.getPhoneNumber(), user2.getAddress(), user2.getZip(), user2.getType());
+					Establishment user2 = (Establishment) (user);
+					mainView.setEstablishmentMyProfileFields(user2.getName(), user2.getPhoneNumber(),
+							user2.getAddress(), user2.getZip(), user2.getType());
 				}
 
 			}
@@ -217,16 +215,16 @@ public class UserController {
 			@Override
 			public void cancelButtonClicked(MyWindowEvent ev) {
 				if (user.hasProfile() && user instanceof Customer) {
-					 eventList = getAllEvents();
-					 events = FXCollections.observableArrayList(eventList);
-					
+					eventList = getAllEvents();
+					events = FXCollections.observableArrayList(eventList);
+
 					mainView.showCustomerView();
 					showAllEvents();
-					
- 				} else if (user.hasProfile() && user instanceof Establishment) {
- 					 eventList = getEstablishmentEvents();
-					 events = FXCollections.observableArrayList(eventList);
-					 
+
+				} else if (user.hasProfile() && user instanceof Establishment) {
+					eventList = getEstablishmentEvents();
+					events = FXCollections.observableArrayList(eventList);
+
 					mainView.showEstablishmentView();
 					showEstablishmentEvents();
 				} else {
@@ -249,9 +247,9 @@ public class UserController {
 				if (customerType.equals("customer")) {
 					user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
 							address, zip);
-					 eventList = getAllEvents();
-					 events = FXCollections.observableArrayList(eventList);
-					
+					eventList = getAllEvents();
+					events = FXCollections.observableArrayList(eventList);
+
 					mainView.showCustomerView();
 					showAllEvents();
 
@@ -303,7 +301,7 @@ public class UserController {
 				writeUserSetFile(userSet);
 				allEventsSet.add(event);
 				writeEventsSetFile(allEventsSet);
-				//System.out.println(event.toString());
+				// System.out.println(event.toString());
 				// System.out.println(establishment.getEventSet());
 
 			}
@@ -338,7 +336,7 @@ public class UserController {
 					mainView.showPurchaseView();
 					mainView.setTicketPrice(event.getTicket().getPrice());
 					System.out.println(event.toString());
-					
+
 				}
 
 			}
@@ -347,27 +345,32 @@ public class UserController {
 			public void purchaseButtonClicked(MyWindowEvent ev) {
 				int total = mainView.calculateTicketPrice();
 				int ticketAmount = mainView.getTicketAmountPurchased();
-				
-				Customer customer = (Customer)(user);
+
+				Customer customer = (Customer) (user);
 				Establishment establishment = new Establishment();
 				establishment = (Establishment) findEstablishment(event);
-				Event estEvent = findEstEvent(establishment,event);
-				
+				Event estEvent = findEstEvent(establishment, event);
+				if (event.getCustomerArrayList() == null) {
+					event.createCustomerArrayList();
+					event.addToCustomersArrayList(customer);
+				} else {
+					event.addToCustomersArrayList(customer);
+				}
+
 				Event customerEvent = new Event();
-				
-				setCustomersEventInfo(customerEvent,String.valueOf(total),ticketAmount);
+
+				setCustomersEventInfo(customerEvent, String.valueOf(total), ticketAmount);
 				customerTicketArrayList = customerEvent.getTicketArrayList();
-				
-				
-				if(customer.getEventSet() == null){
-				Set<Event> eventSet = new HashSet<Event>();
-				eventSet.add(customerEvent);
-				customer.setEventSet(eventSet);
-				
-				}else{
+
+				if (customer.getEventSet() == null) {
+					Set<Event> eventSet = new HashSet<Event>();
+					eventSet.add(customerEvent);
+					customer.setEventSet(eventSet);
+
+				} else {
 					customer.putToSet(customerEvent);
 				}
-				 if (ticketAmount > event.getTicketArrayList().size()) {
+				if (ticketAmount > event.getTicketArrayList().size()) {
 					loginView.showAlert(
 							"There are " + event.getTicketArrayList().size() + " tickets left for this event");
 				} else {
@@ -376,32 +379,33 @@ public class UserController {
 					removeTicketsFromArrayList(event, ticketAmount);
 					establishment.removeFromSet(estEvent);
 					establishment.putToSet(event);
-					
+
 				}
+				System.out.println(event.getCustomerArrayList());
 				writeUserSetFile(userSet);
 				writeEventsSetFile(allEventsSet);
-
 
 			}
 
 			@Override
 			public void historyMenuItemClicked(MyWindowEvent ev) {
-				ArrayList<Event> eventList ;
+				ArrayList<Event> eventList;
 				ObservableList<Event> events;
-				
-				if(user instanceof Customer){
-				eventList = getCustomerEvents();
-				events = FXCollections.observableArrayList(eventList);
-				mainView.showCustomerTransactionHistory();
-				mainView.showCustomerHistory(events);
+
+				if (user instanceof Customer) {
+					eventList = getCustomerEvents();
+					events = FXCollections.observableArrayList(eventList);
+					mainView.showCustomerTransactionHistory();
+					mainView.showCustomerHistory(events);
 				}
-				if(user instanceof Establishment){
+				if (user instanceof Establishment) {
 					eventList = getEstablishmentEvents();
 					events = FXCollections.observableArrayList(eventList);
-					
+
 					mainView.showEstablishmentHistoryView();
 					mainView.showEstablishmentHistory(events);
 					
+
 				}
 
 			}
@@ -410,16 +414,16 @@ public class UserController {
 			public void updateButtonClicked(MyWindowEvent ev) {
 				String[] userInfo = mainView.getUserInfo();
 
-				if(user instanceof Customer){
-				user.setName(userInfo[0]);
-				((Customer) user).setLastName(userInfo[1]);
-				((Customer) user).setBirthday(userInfo[2]);
-				user.setPhoneNumber(userInfo[3]);
-				user.setAddress(userInfo[4]);
-				user.setZip(userInfo[5]);
-	
+				if (user instanceof Customer) {
+					user.setName(userInfo[0]);
+					((Customer) user).setLastName(userInfo[1]);
+					((Customer) user).setBirthday(userInfo[2]);
+					user.setPhoneNumber(userInfo[3]);
+					user.setAddress(userInfo[4]);
+					user.setZip(userInfo[5]);
+
 				}
-				if(user instanceof Establishment){
+				if (user instanceof Establishment) {
 					user.setName(userInfo[0]);
 					user.setPhoneNumber(userInfo[3]);
 					user.setAddress(userInfo[4]);
@@ -429,7 +433,7 @@ public class UserController {
 				System.out.println(user.toString());
 				loginView.showAlert("Your information has been updated");
 				writeUserSetFile(userSet);
-				
+
 			}
 
 			@Override
@@ -442,36 +446,64 @@ public class UserController {
 
 			@Override
 			public void confirmButtonClicked(MyWindowEvent ev) {
-				
+
 				int returningTickets = mainView.getTicketReturningAmount();
-				int size =  returnEvent.getTicketArrayList().size();
+				int size = returnEvent.getTicketArrayList().size();
 				int total = returningTickets * Integer.valueOf(event.getTicket().getPrice());
-				
+
 				Establishment establishment = new Establishment();
 				establishment = (Establishment) findEstablishment(event);
-				Event estEvent = findEstEvent(establishment,event);
-				
-				if(returningTickets >size){
-					loginView.showAlert("You have "+size+" tickets, you can not return "+returningTickets+" tickets.");
-				}else{
+				Event estEvent = findEstEvent(establishment, event);
+
+				if (returningTickets > size) {
+					loginView.showAlert(
+							"You have " + size + " tickets, you can not return " + returningTickets + " tickets.");
+				} else {
 					returnEvent.removeTicketsArrayList(returningTickets);
 					event.addToTicketsArrayList(returningTickets);
 					establishment.removeFromSet(estEvent);
 					establishment.putToSet(event);
-					loginView.showAlert("You have returned "+returningTickets+" tickets, Your total refund is $"+total+"\nThank you.");
+					loginView.showAlert("You have returned " + returningTickets + " tickets, Your total refund is $"
+							+ total + "\nThank you.");
 				}
 				writeUserSetFile(userSet);
 				writeEventsSetFile(allEventsSet);
 
-				
 			}
 
 			@Override
 			public void infoButtonClicked(MyWindowEvent ev) {
-				mainView.showEstablishmentInfoView();
+				event = mainView.getEstablishmentHistoryViewItems();
+				if(event.getCustomerArrayList() == null){
+					loginView.showAlert("No Customers for this even yet");
+				}else{
+					
 				
+				ArrayList<Customer> customerList = event.getCustomerArrayList();
+				ObservableList<Customer> customers = FXCollections.observableArrayList(customerList);
+				
+				
+				Customer[] custArray = new Customer[customerList.size()];
+				customerList.toArray(custArray);
+				Set<Event> set = new HashSet<Event>();
+				
+					for(int i =0; i<custArray.length; i++){
+					set = custArray[i].getEventSet();
+					//System.out.println(set);
+					}
+//				System.out.println(event.getInitialTicketSold());
+//				System.out.println(event.getTicketReturned());
+//				System.out.println(event.getTotalTicketSold());
+//				System.out.println(event.getProfit());
+				mainView.showEstablishmentInfoView();
+				mainView.showMyCustomerList(customers);
+				mainView.setFinancialInfo(event.getInitialTicketSold(), event.getTicketReturned(), event.getTotalTicketSold(), event.getProfit());
+
+				}
 			}
+			
 		});
+		
 	}
 
 	public void writeUserSetFile(Set<User> userSet) {
@@ -504,7 +536,7 @@ public class UserController {
 			@SuppressWarnings("resource")
 			ObjectInputStream reader = new ObjectInputStream(new FileInputStream("userSet.dat"));
 			userSet = (HashSet<User>) reader.readObject();
-			//printSet();
+			// printSet();
 		} catch (FileNotFoundException e) {
 			System.out.println("Fof exp reading set");
 		} catch (IOException e) {
@@ -520,7 +552,7 @@ public class UserController {
 			@SuppressWarnings("resource")
 			ObjectInputStream reader = new ObjectInputStream(new FileInputStream("allEventsSet.dat"));
 			allEventsSet = (HashSet<Event>) reader.readObject();
-			//printSet();
+			// printSet();
 		} catch (FileNotFoundException e) {
 			System.out.println("Fof exp reading set");
 		} catch (IOException e) {
@@ -542,29 +574,31 @@ public class UserController {
 		return false;
 
 	}
-	public User findEstablishment(Event event){
+
+	public User findEstablishment(Event event) {
 		User[] array = new User[userSet.size()];
 		userSet.toArray(array);
 		Establishment findUser = new Establishment();
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] instanceof Establishment) {
-				findUser = (Establishment)(array[i]);
-				if(findUser.getEventSet().contains(event)){
-					 findUser = (Establishment)array[i];
+				findUser = (Establishment) (array[i]);
+				if (findUser.getEventSet().contains(event)) {
+					findUser = (Establishment) array[i];
 				}
 			}
 		}
 		return findUser;
 	}
-	public Event findEstEvent(Establishment est, Event event){
+
+	public Event findEstEvent(Establishment est, Event event) {
 		Event[] array = new Event[est.getEventSet().size()];
 		est.getEventSet().toArray(array);
 		Event getEvent = new Event();
 
 		for (int i = 0; i < array.length; i++) {
-			if (array[i].getEventZIP().equals(event.getEventZIP()) && 
-				array[i].getEventName().equals(event.getEventName()) &&
-				array[i].getEventStartTime().equals(event.getEventStartTime())) {
+			if (array[i].getEventZIP().equals(event.getEventZIP())
+					&& array[i].getEventName().equals(event.getEventName())
+					&& array[i].getEventStartTime().equals(event.getEventStartTime())) {
 				getEvent = array[i];
 			}
 		}
@@ -585,15 +619,16 @@ public class UserController {
 		return eventList;
 
 	}
+
 	public Event findEvent(Event event) {
 		Event[] array = new Event[allEventsSet.size()];
 		allEventsSet.toArray(array);
 		Event getEvent = new Event();
 
 		for (int i = 0; i < array.length; i++) {
-			if (array[i].getEventZIP().equals(event.getEventZIP()) && 
-				array[i].getEventName().equals(event.getEventName()) &&
-				array[i].getEventStartTime().equals(event.getEventStartTime())) {
+			if (array[i].getEventZIP().equals(event.getEventZIP())
+					&& array[i].getEventName().equals(event.getEventName())
+					&& array[i].getEventStartTime().equals(event.getEventStartTime())) {
 				getEvent = array[i];
 			}
 		}
@@ -614,8 +649,9 @@ public class UserController {
 		return eventList;
 
 	}
+
 	public ArrayList<Event> getCustomerEvents() {
-		Customer customer = (Customer)(user);
+		Customer customer = (Customer) (user);
 		Event[] array = new Event[customer.getEventSet().size()];
 		customer.getEventSet().toArray(array);
 		ArrayList<Event> eventList = new ArrayList<Event>();
@@ -628,8 +664,9 @@ public class UserController {
 		return eventList;
 
 	}
+
 	public ArrayList<Event> getEstablishmentEvents() {
-		Establishment establishment = (Establishment)(user);
+		Establishment establishment = (Establishment) (user);
 		Event[] array = new Event[establishment.getEventSet().size()];
 		establishment.getEventSet().toArray(array);
 		ArrayList<Event> eventList = new ArrayList<Event>();
@@ -642,8 +679,9 @@ public class UserController {
 		return eventList;
 
 	}
-	public void setCustomersEventInfo(Event customerEvent, String total,int ticketAmount){
-		
+
+	public void setCustomersEventInfo(Event customerEvent, String total, int ticketAmount) {
+
 		customerEvent.setEventName(event.getEventName());
 		customerEvent.setEventAddress(event.getEventAddress());
 		customerEvent.setEventZIP(event.getEventZIP());
@@ -668,20 +706,22 @@ public class UserController {
 
 	public void removeTicketsFromArrayList(Event event, int amount) {
 		event.removeTicketsArrayList(amount);
-		
+
 	}
-	public void showAllEvents(){
-		if(eventList.isEmpty()){
+
+	public void showAllEvents() {
+		if (eventList.isEmpty()) {
 			loginView.showAlert("No events at this moment");
-		}else{
-		mainView.showAllEvents(events);
+		} else {
+			mainView.showAllEvents(events);
 		}
 	}
-	public void showEstablishmentEvents(){
-		if(eventList.isEmpty()){
+
+	public void showEstablishmentEvents() {
+		if (eventList.isEmpty()) {
 			loginView.showAlert("No events at this moment");
-		}else{
-		mainView.showEstablishmentEvents(events);
+		} else {
+			mainView.showEstablishmentEvents(events);
 		}
 	}
 
