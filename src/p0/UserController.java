@@ -60,7 +60,6 @@ public class UserController {
 
 			writeToUsersLoginFieldsDataFile(usersMap);
 			loginView.showAlert("Congratulations you are a member now");
-			// System.out.println(usersMap);
 		}
 		clearFields();
 
@@ -84,7 +83,6 @@ public class UserController {
 		try {
 			ObjectInputStream input = new ObjectInputStream(new FileInputStream(userDataFile));
 			usersMap = (Map<String, String>) input.readObject();
-			// System.out.println("user map "+usersMap);
 			input.close();
 
 		} catch (FileNotFoundException e) {
@@ -100,7 +98,6 @@ public class UserController {
 		for (Map.Entry<String, String> entry : usersMap.entrySet()) {
 			String userName = entry.getKey();
 			Object userPassWord = entry.getValue();
-			// System.out.println(userName+" "+userPassWord);
 			if ((userName.equals(name)) && (userPassWord.equals(password))) {
 				return true;
 			}
@@ -136,7 +133,7 @@ public class UserController {
 					user = findUser(v);
 
 				}
-				printSet();
+				// printSet();
 				if (user != null) {
 					if (checkUser(user.getId(), user.getPassword()) == false) {
 						loginView.showAlert("Password or ID is incorrect");
@@ -209,14 +206,12 @@ public class UserController {
 			public void cutomerRadioButtonClicked(MyWindowEvent ev) {
 				mainView.showCustomerGridPane();
 				customerType = "customer";
-				// System.out.println("Customer button clicked");
 			}
 
 			@Override
 			public void establishmentRadioButtonClicked(MyWindowEvent ev) {
 				mainView.showEstablishmentGridPane();
 				customerType = "establishment";
-				// System.out.println("Establishment button clicked");
 
 			}
 
@@ -238,7 +233,6 @@ public class UserController {
 				} else {
 					mainView.showIntroView();
 				}
-				// System.out.println("Cancel button clicked");
 			}
 
 			@Override
@@ -252,42 +246,42 @@ public class UserController {
 				String zip = userInfo[5];
 				String type = userInfo[6];
 
-//				if (mainView.checkFields(zip) == 0) {
-//					loginView.showAlert("Invalid zip");
-//				} else {
+				if (checkFields(zip) == 0 || zip.isEmpty()) {
+					loginView.showAlert("Invalid zip");
+				} else if ((customerType.equals("customer")) && (name.isEmpty() || phoneNumber.isEmpty()
+						|| address.isEmpty() || zip.isEmpty() || birthday.isEmpty() || lastName.isEmpty())) {
+					loginView.showAlert("You left some information blank");
+				} else if ((customerType.equals("establishment")) && (name.isEmpty() || phoneNumber.isEmpty()
+						|| address.isEmpty() || zip.isEmpty() || type.isEmpty())) {
+					loginView.showAlert("You left some information blank");
+
+				} else {
 
 					if (customerType.equals("customer")) {
-//						if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
-//								|| birthday.isEmpty() || lastName.isEmpty()) {
-//							loginView.showAlert("You have left one or more fields blanks");
-//						} else {
-							user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
-									address, zip);
 
-							eventList = getAllEvents();
+						user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
+								address, zip);
 
-							events = FXCollections.observableArrayList(eventList);
+						eventList = getAllEvents();
 
-							mainView.showCustomerView();
-							showAllEvents();
-				//		}
-					}  if (customerType.equals("establishment")) {
-//						if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
-//								|| type.isEmpty()) {
-//							loginView.showAlert("You have left one or more fields blanks");
-//						} else {
-							user = new Establishment(user.getId(), user.getPassword(), name, phoneNumber, address, zip,
-									type);
+						events = FXCollections.observableArrayList(eventList);
 
-							mainView.showEstablishmentView();
-					//	}
+						mainView.showCustomerView();
+						showAllEvents();
+
+					}
+					if (customerType.equals("establishment")) {
+
+						user = new Establishment(user.getId(), user.getPassword(), name, phoneNumber, address, zip,
+								type);
+
+						mainView.showEstablishmentView();
+
 					}
 
-				//}
-			addUser(user);
+					addUser(user);
+				}
 
-			System.out.println(user);
-			System.out.println(userSet);
 			}
 
 			@Override
@@ -308,7 +302,7 @@ public class UserController {
 
 				String price = mainView.getTicketPrice();
 				int amount = mainView.getTicketAmount();
-				if (mainView.checkFields(eventZIP) == 0) {
+				if (checkFields(eventZIP) == 0) {
 					loginView.showAlert("Invalid zip");
 				} else {
 					if (amount == 0) {
@@ -335,12 +329,10 @@ public class UserController {
 								establishment.putToSet(event);
 							}
 							loginView.showAlert("Event Successfully set !");
-							// System.out.println(establishment.getEventSet());
 							writeUserSetFile(userSet);
 							allEventsSet.add(event);
 							writeEventsSetFile(allEventsSet);
-							// System.out.println(event.toString());
-							// System.out.println(establishment.getEventSet());
+
 						}
 					}
 				}
@@ -375,7 +367,6 @@ public class UserController {
 					// change buy ticket view
 					mainView.showPurchaseView();
 					mainView.setTicketPrice(event.getTicket().getPrice());
-					// System.out.println(event.toString());
 
 				}
 
@@ -385,7 +376,7 @@ public class UserController {
 			public void purchaseButtonClicked(MyWindowEvent ev) {
 				double price = mainView.getTicketPricePurchased();
 				int ticketAmount = mainView.getTicketAmountPurchased();
-				
+
 				if (ticketAmount == 0) {
 					loginView.showAlert("You have not picked a ticket amount to return");
 				} else {
@@ -407,7 +398,7 @@ public class UserController {
 					setCustomersEventInfo(customerEvent, String.valueOf(total), ticketAmount);
 					customerTicketArrayList = customerEvent.getTicketArrayList();
 					customerEvent.setEventDate(event.getEventDate());
-					
+
 					if (customer.getEventSet() == null) {
 						customer.createEventSet();
 						customer.putToSet(customerEvent);
@@ -427,7 +418,6 @@ public class UserController {
 						establishment.putToSet(event);
 
 					}
-					// System.out.println(event.getCustomerArrayList());
 					writeUserSetFile(userSet);
 					writeEventsSetFile(allEventsSet);
 				}
@@ -459,7 +449,7 @@ public class UserController {
 			public void updateButtonClicked(MyWindowEvent ev) {
 				String[] userInfo = mainView.getUserInfo();
 
-				if (mainView.checkFields(userInfo[5]) == 0) {
+				if (checkFields(userInfo[5]) == 0) {
 					loginView.showAlert("Invalid zip");
 				} else {
 					if (user instanceof Customer) {
@@ -492,7 +482,7 @@ public class UserController {
 
 						}
 					}
-				} // System.out.println(user.toString());
+				}
 				writeUserSetFile(userSet);
 
 			}
@@ -505,7 +495,6 @@ public class UserController {
 				} else {
 					event = findEvent(returnEvent);
 					mainView.showCustomerReturnView();
-					// System.out.println(event);
 				}
 			}
 
@@ -543,7 +532,6 @@ public class UserController {
 						loginView.showAlert("You have returned " + returningTickets + " tickets, Your total refund is $"
 								+ total + "\nThank you.");
 					}
-					// System.out.println(returnEvent.getTicketArrayList().size());
 					writeUserSetFile(userSet);
 					writeEventsSetFile(allEventsSet);
 				}
@@ -612,9 +600,7 @@ public class UserController {
 					loginView.showAlert("You have hired - \nName : " + name + "\nLast Name : " + lastName
 							+ "\nPosition : " + position + "\nSalary : " + salary);
 					writeUserSetFile(userSet);
-					System.out.println(establishment.getEmployeeSet());
 
-					// System.out.println(Arrays.toString(employeeInfo));
 				}
 			}
 
@@ -710,13 +696,13 @@ public class UserController {
 			@SuppressWarnings("resource")
 			ObjectInputStream reader = new ObjectInputStream(new FileInputStream("userSet.dat"));
 			userSet = (HashSet<User>) reader.readObject();
-			 printSet();
+			// printSet();
 		} catch (FileNotFoundException e) {
-			System.out.println("Fof exp reading set");
+			// System.out.println("Fof exp reading set");
 		} catch (IOException e) {
-			System.out.println("Ioexp reading set");
+			// System.out.println("Ioexp reading set");
 		} catch (ClassNotFoundException e) {
-			System.out.println("Class not found exp reading set");
+			// System.out.println("Class not found exp reading set");
 		}
 	}
 
@@ -1027,5 +1013,15 @@ public class UserController {
 			}
 		}
 		return false;
+	}
+
+	public int checkFields(String zip) {
+		for (int i = 0; i < zip.length(); i++) {
+			// If we find a non-digit character we return false.
+			if (!Character.isDigit(zip.charAt(i)) || zip.length() != 5 || zip.trim().isEmpty()) {
+				return 0;
+			}
+		}
+		return 1;
 	}
 }

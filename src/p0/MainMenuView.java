@@ -1191,7 +1191,13 @@ public class MainMenuView {
 	}
 
 	public int getTicketAmount() {
-		if (ticketAmountField.getText().trim().isEmpty()) {
+		for (int i = 0; i < ticketAmountField.getText().length(); i++) {
+			// If we find a non-digit character we return false.
+			if (!Character.isDigit(ticketAmountField.getText().charAt(i))) {
+				return 0;
+			}
+		}
+			 if (ticketAmountField.getText().trim().isEmpty()  ) {
 			return 0;
 		} else {
 			int ticketAmount = Integer.parseInt(ticketAmountField.getText());
@@ -1232,15 +1238,7 @@ public class MainMenuView {
 		});
 
 	}
-	public int checkFields(String zip){
-		for (int i = 0; i < zip.length(); i++) {
-			// If we find a non-digit character we return false.
-			if (!Character.isDigit(zip.charAt(i)) || zip.length() != 5 ) {
-				return 0;
-			}
-		}
-		return 1;
-	}
+	
 
 	public void noSpacesInTicketInfo() {
 		ticketAmountField.textProperty().addListener((observable, old_value, new_value) -> {
