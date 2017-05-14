@@ -47,11 +47,11 @@ public class MainMenuView {
 
 	 private Label nameLabel = new Label("Name");
 	 private Label lastNameLabel  = new Label("Last Name");
-	 private Label birthDayLabel = new Label("Birthday");
-	 private Label phoneNumberLabel = new Label("Phone Number");
+	 private Label birthDayLabel = new Label("Birthday (ex: MM/DD/YY)");
+	 private Label phoneNumberLabel = new Label("Phone Number (ex: XXX-XXX-XXXX)");
 	 private Label addressLabel = new Label("Address");
 	 private Label zipLabel = new Label("Zip");
-	 private Label typeLabel = new Label("Type");
+	 private Label typeLabel = new Label("Type (ex: club, ultra, bar, etc.)");
 
 
 	
@@ -114,7 +114,7 @@ public class MainMenuView {
 	private MenuItem addEmployeesMenuItem;
 	private Menu employeeMenu;
 	private MenuItem allEmployeesMenuItem;
-	private Button employeeInfoButton;
+	private Button hiredEmployeeInfoButton;
 	private Button fireEmployeeButton;
 	private TextField searchEmployeeField;
 	private ListView<Employee> employeeListView;
@@ -125,6 +125,7 @@ public class MainMenuView {
 	private TextField employeeSalaryField;
 	private Button hireButton;
 	private TextField eventDateField;
+	private Button firedEmployeeInfoButton;
 
 
 	
@@ -132,7 +133,6 @@ public class MainMenuView {
 		this.stage=s;
 		stage.setResizable(false);
 		stage.setTitle("Owlz");
-		
 	}
 	public void showIntroView(){
 		borderPane = new BorderPane();
@@ -213,7 +213,8 @@ public class MainMenuView {
 		
 		cancelButtonSetOnAction();
 		submitButtonSetOnAction();
-		
+		noSpacesInTextFields();
+
 		gridPane.add(labelBox, 0, 0);
 		gridPane.add(fieldBox, 1, 0);
 		gridPane.add(cancelButton, 2, 1);
@@ -238,10 +239,11 @@ public class MainMenuView {
 		VBox fieldBox = new VBox(10);
 		fieldBox.setAlignment(Pos.CENTER);
 		fieldBox.getChildren().addAll(nameField,phoneNumberField,addressField,zipField,typeField);
-		
+
 		cancelButtonSetOnAction();
 		submitButtonSetOnAction();
-		
+		noSpacesInTextFields();
+
 		gridPane.add(labelBox, 0, 0);
 		gridPane.add(fieldBox, 1, 0);
 		gridPane.add(cancelButton, 2, 1);
@@ -268,7 +270,9 @@ public class MainMenuView {
 		
 		cancelButtonSetOnAction();
 		updateButtonSetOnAction();
+		noSpacesInTextFields();
 
+		
 		gridPane.add(labelBox, 0, 0);
 		gridPane.add(fieldBox, 1, 0);
 		gridPane.add(cancelButton, 2, 1);
@@ -297,7 +301,8 @@ public class MainMenuView {
 		
 		cancelButtonSetOnAction();
 		updateButtonSetOnAction();
-		
+		noSpacesInTextFields();
+
 		gridPane.add(labelBox, 0, 0);
 		gridPane.add(fieldBox, 1, 0);
 		gridPane.add(cancelButton, 2, 1);
@@ -544,7 +549,6 @@ public class MainMenuView {
 		 ticketPriceField = new TextField();
 		
 		eventSetButton = new Button("Set Event");
-		eventSetButtonAction();
 		
 		HBox buttonBox = new HBox(10);
 		buttonBox.getChildren().addAll(cancelButton,eventSetButton);
@@ -569,8 +573,9 @@ public class MainMenuView {
 		gridPane.add(ticketPriceField, 1, 8);
 		gridPane.add(buttonBox,2,9);
 		
-		
+		noSpacesInTicketInfo();
 		cancelButtonSetOnAction();
+		eventSetButtonAction();
 
 		return gridPane;
 		
@@ -678,20 +683,25 @@ public class MainMenuView {
 		Label searchEmployee = new Label("Search by last name");
 		searchEmployeeField = new TextField();
 		 searchEmployeeButton = new Button("Search");	
-		 employeeInfoButton = new Button("Info");
+		 hiredEmployeeInfoButton = new Button("Show Hired Employee");
+		 firedEmployeeInfoButton = new Button("Show Fired Employee");
+
 		 fireEmployeeButton = new Button("Fire Employee");
 		 employeeListView = new ListView<Employee>();
 		 employeeListView.setPrefWidth(600);
 		
 		HBox buttonBox = new HBox(10);
-		buttonBox.getChildren().addAll(cancelButton,employeeInfoButton, fireEmployeeButton);
+		buttonBox.getChildren().addAll(cancelButton,hiredEmployeeInfoButton,firedEmployeeInfoButton, fireEmployeeButton);
 		
 		gridPane.add(searchEmployee, 0, 1);
 		gridPane.add(searchEmployeeField, 1, 1);
 		gridPane.add(searchEmployeeButton, 2, 1);
 		gridPane.add(employeeListView, 1, 4,50,10);
 		gridPane.add(buttonBox, 2, 16);
-	
+		
+		fireEmployeeButtonSetOnAction();
+		hiredEmployeeInfoButtonSetOnAction();
+		firedEmployeeInfoButtonSetOnAction();
 		searchEmployeeButtonSetOnAction();
 		cancelButtonSetOnAction();
 
@@ -699,6 +709,7 @@ public class MainMenuView {
 		return gridPane;
 		
 	}
+
 	public GridPane addEmployeeView(){
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(5));
@@ -786,6 +797,10 @@ public class MainMenuView {
 	public Event getEstablishmentHistoryViewItems(){
 		Event event = new Event();
 		return event = establishmentHistoryListView.getSelectionModel().getSelectedItem();
+	}
+	public Employee getEmployeeListViewItems(){
+		Employee emp = new Employee();
+		return emp = employeeListView.getSelectionModel().getSelectedItem();		
 	}
 	public void showFoundEvents(ObservableList<Event> event){
 		eventListView.setItems(event);
@@ -1026,6 +1041,30 @@ public class MainMenuView {
 			}	
 		});
 	}
+	private void firedEmployeeInfoButtonSetOnAction() {
+		firedEmployeeInfoButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.firedEmployeeInfoButtonClicked(ev);
+			}	
+		});
+	}
+	private void hiredEmployeeInfoButtonSetOnAction() {
+		hiredEmployeeInfoButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.hiredEmployeeInfoButtonClicked(ev);
+			}	
+		});
+	}
+	private void fireEmployeeButtonSetOnAction() {
+		fireEmployeeButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.fireEmployeeButtonClicked(ev);
+			}	
+		});
+	}
 	public void setCustomerMyProfileFields(String name,String lastName, String birthDay, String phoneNumber,String address,String zip){
 		nameField.setText(name);
 		lastNameField.setText(lastName);
@@ -1093,15 +1132,19 @@ public class MainMenuView {
 		
 	}
 	public String[] getEmployeeInfo(){
-		employeeInfo[0]= employeeNameField.getText();
-		employeeInfo[1]= employeeLastNameField.getText();
-		employeeInfo[2]= employeePositionField.getText();
-		employeeInfo[3]= employeeSalaryField.getText();
+		employeeInfo[0]= employeeNameField.getText().toLowerCase();
+		employeeInfo[1]= employeeLastNameField.getText().toLowerCase();
+		employeeInfo[2]= employeePositionField.getText().toLowerCase();
+		employeeInfo[3]= employeeSalaryField.getText().toLowerCase();
 		return employeeInfo;
 	}
 	public int getTicketAmount(){
+		if(ticketAmountField.getText().trim().isEmpty()){
+			return 0;
+		}else{
 		int ticketAmount = Integer.parseInt(ticketAmountField.getText());
 		return ticketAmount;
+		}
 	}
 	public String getTicketPrice(){
 		return ticketPriceField.getText();
@@ -1112,9 +1155,84 @@ public class MainMenuView {
 	public String getEmployeeLastName(){
 		return searchEmployeeField.getText();
 	}
-	/**
-	 * 
-	 */
+	public void noSpacesInTextFields(){
+		birthDayField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //allows no spaces in fields
+			        	  birthDayField.setText(old_value); 
+			          }
+			     }
+			);
+		zipField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //allows no spaces in fields
+			        	  zipField.setText(old_value); 
+			          }
+			     }
+			);
+		phoneNumberField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //allows no spaces in log in fields
+			        	  phoneNumberField.setText(old_value); 
+			          }
+			     }
+			);
+				
+	}
+	public void noSpacesInTicketInfo(){
+		ticketAmountField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //allows no spaces in log in fields
+			        	  ticketAmountField.setText(old_value); 
+			          }
+			     }
+			);
+		ticketPriceField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //allows no spaces in log in fields
+			        	  ticketPriceField.setText(old_value); 
+			          }
+			     }
+			);
+		eventZIPField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //allows no spaces in log in fields
+			        	  eventZIPField.setText(old_value); 
+			          }
+			     }
+			);
+		eventStartTimeField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //allows no spaces in log in fields
+			        	  eventStartTimeField.setText(old_value); 
+			          }
+			     }
+			);
+		eventDateField.textProperty().addListener(
+			     (observable, old_value, new_value) -> {
+			          if(new_value.contains(" "))
+			          {
+			                //allows no spaces in log in fields
+			        	  eventDateField.setText(old_value); 
+			          }
+			     }
+			);
+	}
+	
 
 }
 

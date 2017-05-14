@@ -253,8 +253,13 @@ public class UserController {
 				String address = userInfo[4];
 				String zip = userInfo[5];
 				String type = userInfo[6];
-
+				
+				
+				
 				if (customerType.equals("customer")) {
+					if(name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty() || birthday.isEmpty() || lastName.isEmpty() ){
+						loginView.showAlert("You have left one or more fields blanks");
+					}else{
 					user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
 							address, zip);
 					eventList = getAllEvents();
@@ -262,16 +267,21 @@ public class UserController {
 
 					mainView.showCustomerView();
 					showAllEvents();
-
+					}
 				} else if (customerType.equals("establishment")) {
+					if(name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty() || type.isEmpty()){
+						loginView.showAlert("You have left one or more fields blanks");
+					}else{
 					user = new Establishment(user.getId(), user.getPassword(), name, phoneNumber, address, zip, type);
 					mainView.showEstablishmentView();
+					}
 				}
 
 				addUser(user);
 				// System.out.println(user.toString());
 				// System.out.println("Submit button ");
 				printSet();
+				
 			}
 
 			@Override
@@ -289,10 +299,17 @@ public class UserController {
 				String eventType = eventInfo[3];
 				String eventStartTime = eventInfo[4];
 				String eventDate = eventInfo[5];
-
+				
 				String price = mainView.getTicketPrice();
 				int amount = mainView.getTicketAmount();
-
+				if(amount == 0){
+					loginView.showAlert("You have left ticket amount empty");
+				}else{
+				
+				if(checkIfFieldsAreWrong(eventInfo)== true || price.isEmpty() || String.valueOf(amount).isEmpty()){
+					loginView.showAlert("You have left one or more fields blanks");
+				}else{
+				
 				Establishment establishment = ((Establishment) user);
 				event = new Event(eventName, eventAddress, eventZIP, eventType, eventStartTime,eventDate);
 				event.setTicket(price);
@@ -314,7 +331,8 @@ public class UserController {
 				writeEventsSetFile(allEventsSet);
 				// System.out.println(event.toString());
 				// System.out.println(establishment.getEventSet());
-
+				}
+				}
 			}
 
 			@Override
@@ -425,27 +443,41 @@ public class UserController {
 			@Override
 			public void updateButtonClicked(MyWindowEvent ev) {
 				String[] userInfo = mainView.getUserInfo();
-
+				
 				if (user instanceof Customer) {
+					if(userInfo[0].isEmpty() || userInfo[1].isEmpty() || userInfo[2].isEmpty() ||
+					   userInfo[3].isEmpty() || userInfo[4].isEmpty() || userInfo[5].isEmpty()){
+						loginView.showAlert("You have left one or more field blank");
+					}
+					else{
 					user.setName(userInfo[0]);
 					((Customer) user).setLastName(userInfo[1]);
 					((Customer) user).setBirthday(userInfo[2]);
 					user.setPhoneNumber(userInfo[3]);
 					user.setAddress(userInfo[4]);
 					user.setZip(userInfo[5]);
+					loginView.showAlert("Your information has been updated");
 
+					}
 				}
 				if (user instanceof Establishment) {
+					if(userInfo[0].isEmpty() || userInfo[3].isEmpty() || userInfo[4].isEmpty() || userInfo[5].isEmpty()){
+						loginView.showAlert("You have left one or more field blank");
+
+					}
+					else{
 					user.setName(userInfo[0]);
 					user.setPhoneNumber(userInfo[3]);
 					user.setAddress(userInfo[4]);
 					user.setZip(userInfo[5]);
 					((Establishment) user).setType(userInfo[6]);
+					loginView.showAlert("Your information has been updated");
+
+					}
 				}
 				System.out.println(user.toString());
-				loginView.showAlert("Your information has been updated");
 				writeUserSetFile(userSet);
-
+				
 			}
 
 			@Override
@@ -549,6 +581,9 @@ public class UserController {
 				String position = employeeInfo[2];
 				String salary = employeeInfo[3];
 				String status = "hired";
+				if(checkIfFieldsAreWrong(employeeInfo)== true){
+					loginView.showAlert("You have left one or more fields blanks");
+				}else{
 				
 				Establishment establishment = (Establishment)(user);
 				Employee employee = new Employee(name,lastName,position,salary,status);
@@ -563,14 +598,22 @@ public class UserController {
 				System.out.println(establishment.getEmployeeSet());
 				
 				//System.out.println(Arrays.toString(employeeInfo));
+				}
 			}
 
 			@Override
 			public void searchEmployeeButtonClicked(MyWindowEvent ev) {
-				String lastName = mainView.getEmployeeLastName();
+				Establishment establishment = (Establishment)(user);
+				String lastName = mainView.getEmployeeLastName().toLowerCase();
 				ArrayList<Employee> employeeList = findEmployee(lastName);
+				
 				if(employeeList.isEmpty()){
 					loginView.showAlert("No Employe Found");
+					ArrayList<Employee> allEmployees = getAllEmployess(establishment);
+					ObservableList<Employee> employees = FXCollections.observableArrayList(allEmployees);
+					mainView.showEmployeeList(employees);
+
+
 				}else{
 					
 					ObservableList<Employee> employees = FXCollections.observableArrayList(employeeList);
@@ -578,6 +621,46 @@ public class UserController {
 					mainView.showEmployeeList(employees);
 				}
 				
+			}
+
+			@Override
+			public void firedEmployeeInfoButtonClicked(MyWindowEvent ev) {
+				Establishment establishment = (Establishment)(user);
+				
+				ArrayList<Employee> eventList = getAllFiredEmployess(establishment);
+				ObservableList<Employee> events = FXCollections.observableArrayList(eventList);
+				
+				mainView.showEmployeeList(events);
+				
+			}
+
+			
+
+			@Override
+			public void hiredEmployeeInfoButtonClicked(MyWindowEvent ev) {
+				Establishment establishment = (Establishment)(user);
+				
+				ArrayList<Employee> eventList = getAllHiredEmployess(establishment);
+				ObservableList<Employee> events = FXCollections.observableArrayList(eventList);
+				
+				mainView.showEmployeeList(events);
+				
+			}
+
+			@Override
+			public void fireEmployeeButtonClicked(MyWindowEvent ev) {
+				Employee employee = mainView.getEmployeeListViewItems();
+				if(employee == null){
+					loginView.showAlert("No Employee is selected");
+				}if(employee.getStatus().equals("fired")){
+					loginView.showAlert("This employee is already fired");
+				}
+				else{
+					employee.setStatus("fired");
+					loginView.showAlert("You have fired : "+employee);
+				}
+				writeUserSetFile(userSet);
+
 			}
 
 		});
@@ -869,5 +952,54 @@ public class UserController {
 		Collections.reverse(employeeList);
 		return employeeList;
 		}
+	}
+		
+		private ArrayList<Employee> getAllFiredEmployess(Establishment establishment) {
+			if(establishment.getEmployeeSet() == null){
+				ArrayList<Employee> emptyList = new ArrayList<Employee>();
+				return emptyList;
+			}else{
+				Employee[] array = new Employee[establishment.getEmployeeSet().size()];
+
+			establishment.getEmployeeSet().toArray(array);
+			ArrayList<Employee> employeeList = new ArrayList<Employee>();
+			
+			for (int i = 0; i < array.length; i++) {
+				if(array[i].getStatus().equals("fired")){
+					employeeList.add(array[i]);
+				}
+
+			}
+			Collections.reverse(employeeList);
+			return employeeList;
+			}
+	}
+		private ArrayList<Employee> getAllHiredEmployess(Establishment establishment) {
+			if(establishment.getEmployeeSet() == null){
+				ArrayList<Employee> emptyList = new ArrayList<Employee>();
+				return emptyList;
+			}else{
+				Employee[] array = new Employee[establishment.getEmployeeSet().size()];
+
+			establishment.getEmployeeSet().toArray(array);
+			ArrayList<Employee> employeeList = new ArrayList<Employee>();
+			
+			for (int i = 0; i < array.length; i++) {
+				if(array[i].getStatus().equals("hired")){
+					employeeList.add(array[i]);
+				}
+
+			}
+			Collections.reverse(employeeList);
+			return employeeList;
+			}
+	}
+	public boolean checkIfFieldsAreWrong(String[] info){
+		for(int i=0; i<info.length;i++){
+			if(info[i].isEmpty()){
+				return true;
+			}
+		}
+		return false;
 	}
 }

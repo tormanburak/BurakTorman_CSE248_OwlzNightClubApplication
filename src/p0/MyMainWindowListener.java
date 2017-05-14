@@ -43,6 +43,12 @@ public interface MyMainWindowListener extends EventListener {
 	public void hireButtonClicked(MyWindowEvent ev);
 
 	public void searchEmployeeButtonClicked(MyWindowEvent ev);
+
+	public void firedEmployeeInfoButtonClicked(MyWindowEvent ev);
+
+	public void hiredEmployeeInfoButtonClicked(MyWindowEvent ev);
+
+	public void fireEmployeeButtonClicked(MyWindowEvent ev);
 	
 
 

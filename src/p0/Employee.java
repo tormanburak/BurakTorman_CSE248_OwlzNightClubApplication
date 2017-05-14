@@ -9,6 +9,9 @@ public class Employee implements Serializable{
 	private String salary;
 	private String status;
 	
+	public Employee(){
+		
+	}
 	public Employee(String firstName, String lastName, String position, String salary, String status) {
 		super();
 		this.firstName = firstName;
@@ -60,8 +63,8 @@ public class Employee implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Employee [firstName=" + firstName + ", lastName=" + lastName + ", position=" + position + ", salary="
-				+ salary + ", status=" + status + "]";
+		return "First Name = " + firstName + " ||| Last Name = " + lastName + " ||| Position = " + position + " ||| Salary = "
+				+ salary + " ||| Status = " + status + "";
 	}
 	
 }
