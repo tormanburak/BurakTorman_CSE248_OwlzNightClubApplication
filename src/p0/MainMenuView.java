@@ -79,6 +79,10 @@ public class MainMenuView {
 	private Button searchEventButton;
 	private Button buyTicketsButton;
 	private Button purchaseButton;
+	private Button returnButton;
+	private Button confirmButton;
+	private Button infoButton;
+
 
 	private RadioButton customerRadioButton;
 	private RadioButton establishmentRadioButton;
@@ -90,21 +94,19 @@ public class MainMenuView {
 	private Alert messageAlert;
 	private ListView<Event> eventListView;
 	private ListView<Event> customerAllEventListView;
+	private ListView<Event> establishmentHistoryListView;
+	private ListView<Customer> myCustomersListView;
+	private ListView<Event> establishmentMyEventListView;
+	private ListView<Event> customerHistoryListView;
 
-	
 	private String[] userInfo = new String[7];
 	private String[] eventInfo = new String[5];
 	private String eventZIP;
 	private TextField priceField;
 	private ComboBox<Integer> ticketComboBox;
-	private Button returnButton;
-	private ListView<Event> customerHistoryListView;
-	private Button confirmButton;
+	
 	private TextField ticketReturningAmountField;
-	private ListView<Event> establishmentMyEventListView;
-	private Button infoButton;
-	private ListView<Event> establishmentHistoryListView;
-	private ListView<Customer> myCustomersListView;
+	
 	private TextField ticketSoldField;
 	private TextField netProfitField;
 	private TextField intialTicketssoldField;
@@ -130,7 +132,7 @@ public class MainMenuView {
 		borderPane.setCenter(createProfileGridPane());
 				
 		Group root = new Group();
-		scene = new Scene(root,900,800,Color.DEEPPINK);
+		scene = new Scene(root,1500,800,Color.DEEPPINK);
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 		root.getChildren().add(borderPane);
@@ -308,7 +310,7 @@ public class MainMenuView {
 		buttonBox.getChildren().addAll(cancelButton,returnButton);
 		
 		gridPane.add(info, 0, 1);
-		gridPane.add(customerHistoryListView, 0, 4,10,10);
+		gridPane.add(customerHistoryListView, 0, 4,50,10);
 		gridPane.add(buttonBox, 3, 16);
 		
 		returnButtonSetOnAction();
@@ -335,7 +337,7 @@ public class MainMenuView {
 		buttonBox.getChildren().addAll(cancelButton,infoButton);
 		
 		gridPane.add(info, 0, 1);
-		gridPane.add(establishmentHistoryListView, 0, 4,10,10);
+		gridPane.add(establishmentHistoryListView, 0, 4,50,10);
 		gridPane.add(buttonBox, 3, 16);
 		
 
@@ -356,7 +358,7 @@ public class MainMenuView {
 		Label totalTicketsSold = new Label("Total tickets sold");
 		Label initialTicketsSold = new Label("Initial tickets sold");
 		Label ticketsReturned = new Label("Tickets returned");
-		Label netProfit = new Label("Net Profit");
+		Label netProfit = new Label("Net Profit plus 8.875% tax");
 		
 		ticketSoldField = new TextField();
 		ticketSoldField.setEditable(false);
@@ -390,7 +392,7 @@ public class MainMenuView {
 		gridPane.add(addAll,0,16);
 
 		
-		gridPane.add(myCustomersListView, 0, 4,10,10);
+		gridPane.add(myCustomersListView, 0, 4,50,10);
 		gridPane.add(buttonBox, 3, 16);
 		
 
@@ -420,7 +422,7 @@ public class MainMenuView {
 		profileMenuItem = new MenuItem("Profile");
 		searchEvent = new MenuItem("Search Event");
 		customerAllEventListView = new ListView<Event>();
-		customerAllEventListView.setPrefWidth(600);
+		customerAllEventListView.setPrefWidth(1000);
 		customerAllEventListView.setPrefHeight(600);
 		
 		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem);
@@ -429,7 +431,7 @@ public class MainMenuView {
 		
 		Label infoLabel = new Label("All Recent Events");
 		infoLabel.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 40));
-		gridPane.add(customerAllEventListView, 0,1);
+		gridPane.add(customerAllEventListView, 0,1,50,10);
 		gridPane.add(infoLabel, 0, 0);
 		
 		borderPane.setTop(menuBar);
@@ -440,7 +442,7 @@ public class MainMenuView {
 		profileMenuItemAction();
 				
 		Group root = new Group();
-		scene = new Scene(root,900,800,Color.DEEPPINK);
+		scene = new Scene(root,1500,800,Color.DEEPPINK);
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 		root.getChildren().add(borderPane);
@@ -463,7 +465,7 @@ public class MainMenuView {
 		profileMenu = new Menu("Profile");
 		eventMenu = new Menu("Event");
 		establishmentMyEventListView = new ListView<Event>();
-		establishmentMyEventListView.setPrefWidth(600);
+		establishmentMyEventListView.setPrefWidth(1000);
 		establishmentMyEventListView.setPrefHeight(600);
 		
 		historyMenuItem = new MenuItem("History");
@@ -487,7 +489,7 @@ public class MainMenuView {
 		historyMenuItemAction();
 		
 		Group root = new Group();
-		scene = new Scene(root,900,800,Color.DEEPPINK);
+		scene = new Scene(root,1500,800,Color.DEEPPINK);
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 		root.getChildren().add(borderPane);
@@ -568,7 +570,7 @@ public class MainMenuView {
 		
 		gridPane.add(eventZIP, 0, 1);
 		gridPane.add(searchEventField, 1, 1);
-		gridPane.add(eventListView, 1, 4,10,10);
+		gridPane.add(eventListView, 1, 4,50,10);
 		gridPane.add(searchEventButton, 2, 1);
 		gridPane.add(buttonBox, 3, 16);
 		
@@ -660,6 +662,7 @@ public class MainMenuView {
 	}
 	public int calculateTicketPrice(){
 		int total = getTicketAmountPurchased() * getTicketPricePurchased();
+		
 		return total;
 	}
 	public void showPurchaseView(){
@@ -892,7 +895,7 @@ public class MainMenuView {
 		zipField.setText(zip);
 		typeField.setText(type);
 	}
-	public void setFinancialInfo(int initalTicketBought, int ticketsReturned, int totalTicketsSold, int netProfit){
+	public void setFinancialInfo(int initalTicketBought, int ticketsReturned, int totalTicketsSold, double netProfit){
 		String ticketBought = String.valueOf(initalTicketBought);
 		String ticketReturned = String.valueOf(ticketsReturned);
 		String totalSold = String.valueOf(totalTicketsSold);

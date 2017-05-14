@@ -1,6 +1,7 @@
 package p0;
 
 import java.io.Serializable;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Establishment extends User implements Serializable{
@@ -31,6 +32,9 @@ public class Establishment extends User implements Serializable{
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public void createEventSet(){
+		eventSet = new LinkedHashSet();
 	}
 	public Set<Event> getEventSet() {
 		return eventSet;

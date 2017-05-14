@@ -85,7 +85,7 @@ public class LogInView {
 		
 		Group root = new Group();
 		
-		scene = new Scene(root,900,800,Color.DARKMAGENTA);
+		scene = new Scene(root,1500,800,Color.DARKMAGENTA);
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 		root.getChildren().add(borderPane);

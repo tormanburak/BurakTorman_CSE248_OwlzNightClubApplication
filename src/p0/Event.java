@@ -20,7 +20,8 @@ public class Event implements Serializable{
 
 	private int boughtTicket =0;
 	private int returnedTicket =0;
-	private int profit =0;
+	private double profit = 0.0;
+	private double tax = 0.08875;
 	
 	public Event(String eventName,String eventAddress,String eventZIP, String eventType , String eventStartTime){
 		this.setEventName(eventName);
@@ -130,15 +131,21 @@ public class Event implements Serializable{
 	public Ticket getTicket() {
 		return ticket;
 	}
+	public void setTicketPrice(String price){
+		ticket.setPrice(price);
+	}
 	
 
 	public void setTicket(String price) {
 		ticket = new Ticket(price);
 	}
-	public int getProfit(){
-		int price = Integer.valueOf(getTicket().getPrice());
+	
+	public double getProfit(){
+		double price = Double.valueOf(getTicket().getPrice());
+		profit = ((getTotalTicketSold()*price) );
+		double taxForProfit = profit*tax;
+		return profit + taxForProfit;
 		
-		return profit = getTotalTicketSold()*price;
 	}
 	public int getInitialTicketSold(){
 		return boughtTicketList.size();
@@ -149,6 +156,9 @@ public class Event implements Serializable{
 	
 	public int getTotalTicketSold(){
 		return getInitialTicketSold() - getTicketReturned();
+	}
+	public double getTax(){
+		return tax;
 	}
 
 

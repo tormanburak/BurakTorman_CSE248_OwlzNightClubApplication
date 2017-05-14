@@ -2,6 +2,7 @@ package p0;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Customer extends User implements Serializable {
@@ -39,6 +40,9 @@ public class Customer extends User implements Serializable {
 	}
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	public void createEventSet(){
+		eventSet = new LinkedHashSet();
 	}
 	public void putToSet(Event event){
 		eventSet.add(event);

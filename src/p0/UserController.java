@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +23,7 @@ public class UserController {
 	private MainMenuView mainView;
 	private Map<String, String> usersMap = new HashMap<>();
 	private Set<User> userSet = new HashSet<User>();
-	private Set<Event> allEventsSet = new HashSet<Event>();
+	private Set<Event> allEventsSet = new LinkedHashSet<Event>();
 	private Event event;
 	private Event returnEvent;
 	private ArrayList<Ticket> ticketArrayList;
@@ -290,14 +292,14 @@ public class UserController {
 				event.setTicketArrayList(ticketArrayList);
 
 				if (establishment.getEventSet() == null) {
-					Set<Event> eventSet = new HashSet<Event>();
-					eventSet.add(event);
-					establishment.setEventSet(eventSet);
+					establishment.createEventSet();
+					establishment.putToSet(event);
 
 				} else {
 					establishment.putToSet(event);
 				}
 				loginView.showAlert("Event Successfully set !");
+				System.out.println(establishment.getEventSet());
 				writeUserSetFile(userSet);
 				allEventsSet.add(event);
 				writeEventsSetFile(allEventsSet);
@@ -343,9 +345,10 @@ public class UserController {
 
 			@Override
 			public void purchaseButtonClicked(MyWindowEvent ev) {
-				int total = mainView.calculateTicketPrice();
+				double price = mainView.getTicketPricePurchased();
 				int ticketAmount = mainView.getTicketAmountPurchased();
-
+				double total = calculateCost(ticketAmount, price,event.getTax());
+				
 				Customer customer = (Customer) (user);
 				Establishment establishment = new Establishment();
 				establishment = (Establishment) findEstablishment(event);
@@ -363,9 +366,8 @@ public class UserController {
 				customerTicketArrayList = customerEvent.getTicketArrayList();
 
 				if (customer.getEventSet() == null) {
-					Set<Event> eventSet = new HashSet<Event>();
-					eventSet.add(customerEvent);
-					customer.setEventSet(eventSet);
+					customer.createEventSet();
+					customer.putToSet(customerEvent);
 
 				} else {
 					customer.putToSet(customerEvent);
@@ -375,7 +377,7 @@ public class UserController {
 							"There are " + event.getTicketArrayList().size() + " tickets left for this event");
 				} else {
 
-					loginView.showAlert("You have purchased " + ticketAmount + " tickets. Your total is = $" + total);
+					loginView.showAlert("You have purchased " + ticketAmount + " tickets.\nYour total plus 8.875% tax is = $" + total);
 					removeTicketsFromArrayList(event, ticketAmount);
 					establishment.removeFromSet(estEvent);
 					establishment.putToSet(event);
@@ -449,23 +451,31 @@ public class UserController {
 
 				int returningTickets = mainView.getTicketReturningAmount();
 				int size = returnEvent.getTicketArrayList().size();
-				int total = returningTickets * Integer.valueOf(event.getTicket().getPrice());
+				double total = returningTickets * Integer.valueOf(event.getTicket().getPrice());
+				double totalWithTax = total*event.getTax();
+				total = total + totalWithTax;
 
 				Establishment establishment = new Establishment();
 				establishment = (Establishment) findEstablishment(event);
 				Event estEvent = findEstEvent(establishment, event);
+				double customerMoney = Double.valueOf(returnEvent.getTicket().getPrice()) - total;
 
+							
 				if (returningTickets > size) {
 					loginView.showAlert(
 							"You have " + size + " tickets, you can not return " + returningTickets + " tickets.");
 				} else {
+					returnEvent.setTicketPrice(String.valueOf(customerMoney));
 					returnEvent.removeTicketsArrayList(returningTickets);
+					
 					event.addToTicketsArrayList(returningTickets);
+					
 					establishment.removeFromSet(estEvent);
 					establishment.putToSet(event);
 					loginView.showAlert("You have returned " + returningTickets + " tickets, Your total refund is $"
 							+ total + "\nThank you.");
 				}
+				System.out.println(returnEvent.getTicketArrayList().size());
 				writeUserSetFile(userSet);
 				writeEventsSetFile(allEventsSet);
 
@@ -495,6 +505,7 @@ public class UserController {
 //				System.out.println(event.getTicketReturned());
 //				System.out.println(event.getTotalTicketSold());
 //				System.out.println(event.getProfit());
+				
 				mainView.showEstablishmentInfoView();
 				mainView.showMyCustomerList(customers);
 				mainView.setFinancialInfo(event.getInitialTicketSold(), event.getTicketReturned(), event.getTotalTicketSold(), event.getProfit());
@@ -616,6 +627,7 @@ public class UserController {
 				eventList.add(array[i]);
 			}
 		}
+		Collections.reverse(eventList);
 		return eventList;
 
 	}
@@ -638,6 +650,7 @@ public class UserController {
 
 	public ArrayList<Event> getAllEvents() {
 		Event[] array = new Event[allEventsSet.size()];
+		
 		allEventsSet.toArray(array);
 		ArrayList<Event> eventList = new ArrayList<Event>();
 
@@ -646,6 +659,7 @@ public class UserController {
 			eventList.add(array[i]);
 
 		}
+		Collections.reverse(eventList);
 		return eventList;
 
 	}
@@ -661,6 +675,7 @@ public class UserController {
 			eventList.add(array[i]);
 
 		}
+		Collections.reverse(eventList);
 		return eventList;
 
 	}
@@ -668,6 +683,7 @@ public class UserController {
 	public ArrayList<Event> getEstablishmentEvents() {
 		Establishment establishment = (Establishment) (user);
 		Event[] array = new Event[establishment.getEventSet().size()];
+		
 		establishment.getEventSet().toArray(array);
 		ArrayList<Event> eventList = new ArrayList<Event>();
 
@@ -676,8 +692,15 @@ public class UserController {
 			eventList.add(array[i]);
 
 		}
+		Collections.reverse(eventList);
 		return eventList;
 
+	}
+	public double calculateCost(int amount, double price, double tax){
+		double cost = amount*price;
+		double taxOfCost = tax*cost;
+		double total = cost+taxOfCost;
+		return total;
 	}
 
 	public void setCustomersEventInfo(Event customerEvent, String total, int ticketAmount) {
