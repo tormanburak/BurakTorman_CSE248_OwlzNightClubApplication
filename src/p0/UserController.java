@@ -73,9 +73,9 @@ public class UserController {
 			out.close();
 
 		} catch (FileNotFoundException e) {
-			loginView.showAlert("Problem occured with writing to files");
+			// loginView.showAlert("Problem occured with writing to files");
 		} catch (IOException e) {
-			loginView.showAlert("IO exception");
+			// loginView.showAlert("IO exception");
 		}
 	}
 
@@ -88,11 +88,11 @@ public class UserController {
 			input.close();
 
 		} catch (FileNotFoundException e) {
-			//loginView.showAlert("Problem occured with reading files");
+			// loginView.showAlert("Problem occured with reading files");
 		} catch (IOException e) {
 
 		} catch (ClassNotFoundException e) {
-			//loginView.showAlert("Class not found while reading file");
+			// loginView.showAlert("Class not found while reading file");
 		}
 	}
 
@@ -154,23 +154,21 @@ public class UserController {
 								mainView.showAllEvents(events);
 							}
 						} else if (user.hasProfile() && user instanceof Establishment) {
-							
 
 							ArrayList<Event> eventList = getEstablishmentEvents();
 							ObservableList<Event> events = FXCollections.observableArrayList(eventList);
 
 							mainView.showEstablishmentView();
-								if (eventList.isEmpty()) {
-									 eventList = new ArrayList<Event>();
-									events = FXCollections.observableArrayList(eventList);
-
-									mainView.showEstablishmentEvents(events);
-
-								} else {
+							if (eventList.isEmpty()) {
+								eventList = new ArrayList<Event>();
+								events = FXCollections.observableArrayList(eventList);
 
 								mainView.showEstablishmentEvents(events);
-								}
-							
+
+							} else {
+
+								mainView.showEstablishmentEvents(events);
+							}
 
 						}
 
@@ -253,27 +251,28 @@ public class UserController {
 				String address = userInfo[4];
 				String zip = userInfo[5];
 				String type = userInfo[6];
-				
-				
-				
-				if (customerType.equals("customer")) {
-					if(name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty() || birthday.isEmpty() || lastName.isEmpty() ){
-						loginView.showAlert("You have left one or more fields blanks");
-					}else{
-					user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
-							address, zip);
-					eventList = getAllEvents();
-					events = FXCollections.observableArrayList(eventList);
 
-					mainView.showCustomerView();
-					showAllEvents();
+				if (customerType.equals("customer")) {
+					if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
+							|| birthday.isEmpty() || lastName.isEmpty()) {
+						loginView.showAlert("You have left one or more fields blanks");
+					} else {
+						user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
+								address, zip);
+						eventList = getAllEvents();
+						events = FXCollections.observableArrayList(eventList);
+
+						mainView.showCustomerView();
+						showAllEvents();
 					}
 				} else if (customerType.equals("establishment")) {
-					if(name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty() || type.isEmpty()){
+					if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
+							|| type.isEmpty()) {
 						loginView.showAlert("You have left one or more fields blanks");
-					}else{
-					user = new Establishment(user.getId(), user.getPassword(), name, phoneNumber, address, zip, type);
-					mainView.showEstablishmentView();
+					} else {
+						user = new Establishment(user.getId(), user.getPassword(), name, phoneNumber, address, zip,
+								type);
+						mainView.showEstablishmentView();
 					}
 				}
 
@@ -281,7 +280,7 @@ public class UserController {
 				// System.out.println(user.toString());
 				// System.out.println("Submit button ");
 				printSet();
-				
+
 			}
 
 			@Override
@@ -299,39 +298,40 @@ public class UserController {
 				String eventType = eventInfo[3];
 				String eventStartTime = eventInfo[4];
 				String eventDate = eventInfo[5];
-				
+
 				String price = mainView.getTicketPrice();
 				int amount = mainView.getTicketAmount();
-				if(amount == 0){
+				if (amount == 0) {
 					loginView.showAlert("You have left ticket amount empty");
-				}else{
-				
-				if(checkIfFieldsAreWrong(eventInfo)== true || price.isEmpty() || String.valueOf(amount).isEmpty()){
-					loginView.showAlert("You have left one or more fields blanks");
-				}else{
-				
-				Establishment establishment = ((Establishment) user);
-				event = new Event(eventName, eventAddress, eventZIP, eventType, eventStartTime,eventDate);
-				event.setTicket(price);
-				event.createTicketArrayList(amount);
-				ticketArrayList = event.getTicketArrayList();
-				event.setTicketArrayList(ticketArrayList);
-
-				if (establishment.getEventSet() == null) {
-					establishment.createEventSet();
-					establishment.putToSet(event);
-
 				} else {
-					establishment.putToSet(event);
-				}
-				loginView.showAlert("Event Successfully set !");
-				System.out.println(establishment.getEventSet());
-				writeUserSetFile(userSet);
-				allEventsSet.add(event);
-				writeEventsSetFile(allEventsSet);
-				// System.out.println(event.toString());
-				// System.out.println(establishment.getEventSet());
-				}
+
+					if (checkIfFieldsAreWrong(eventInfo) == true || price.isEmpty()
+							|| String.valueOf(amount).isEmpty()) {
+						loginView.showAlert("You have left one or more fields blanks");
+					} else {
+
+						Establishment establishment = ((Establishment) user);
+						event = new Event(eventName, eventAddress, eventZIP, eventType, eventStartTime, eventDate);
+						event.setTicket(price);
+						event.createTicketArrayList(amount);
+						ticketArrayList = event.getTicketArrayList();
+						event.setTicketArrayList(ticketArrayList);
+
+						if (establishment.getEventSet() == null) {
+							establishment.createEventSet();
+							establishment.putToSet(event);
+
+						} else {
+							establishment.putToSet(event);
+						}
+						loginView.showAlert("Event Successfully set !");
+						// System.out.println(establishment.getEventSet());
+						writeUserSetFile(userSet);
+						allEventsSet.add(event);
+						writeEventsSetFile(allEventsSet);
+						// System.out.println(event.toString());
+						// System.out.println(establishment.getEventSet());
+					}
 				}
 			}
 
@@ -364,7 +364,7 @@ public class UserController {
 					// change buy ticket view
 					mainView.showPurchaseView();
 					mainView.setTicketPrice(event.getTicket().getPrice());
-					System.out.println(event.toString());
+					// System.out.println(event.toString());
 
 				}
 
@@ -374,6 +374,9 @@ public class UserController {
 			public void purchaseButtonClicked(MyWindowEvent ev) {
 				double price = mainView.getTicketPricePurchased();
 				int ticketAmount = mainView.getTicketAmountPurchased();
+				if(ticketAmount == 0){
+					loginView.showAlert("You have not picked a ticket amount to return");
+				}else{
 				double total = calculateCost(ticketAmount, price, event.getTax());
 
 				Customer customer = (Customer) (user);
@@ -411,17 +414,16 @@ public class UserController {
 					establishment.putToSet(event);
 
 				}
-				System.out.println(event.getCustomerArrayList());
+				// System.out.println(event.getCustomerArrayList());
 				writeUserSetFile(userSet);
 				writeEventsSetFile(allEventsSet);
-
+				}
 			}
 
 			@Override
 			public void historyMenuItemClicked(MyWindowEvent ev) {
 				ArrayList<Event> eventList;
 				ObservableList<Event> events;
-				
 
 				if (user instanceof Customer) {
 					eventList = getCustomerEvents();
@@ -443,55 +445,61 @@ public class UserController {
 			@Override
 			public void updateButtonClicked(MyWindowEvent ev) {
 				String[] userInfo = mainView.getUserInfo();
-				
+
 				if (user instanceof Customer) {
-					if(userInfo[0].isEmpty() || userInfo[1].isEmpty() || userInfo[2].isEmpty() ||
-					   userInfo[3].isEmpty() || userInfo[4].isEmpty() || userInfo[5].isEmpty()){
+					if (userInfo[0].isEmpty() || userInfo[1].isEmpty() || userInfo[2].isEmpty() || userInfo[3].isEmpty()
+							|| userInfo[4].isEmpty() || userInfo[5].isEmpty()) {
 						loginView.showAlert("You have left one or more field blank");
-					}
-					else{
-					user.setName(userInfo[0]);
-					((Customer) user).setLastName(userInfo[1]);
-					((Customer) user).setBirthday(userInfo[2]);
-					user.setPhoneNumber(userInfo[3]);
-					user.setAddress(userInfo[4]);
-					user.setZip(userInfo[5]);
-					loginView.showAlert("Your information has been updated");
+					} else {
+						user.setName(userInfo[0]);
+						((Customer) user).setLastName(userInfo[1]);
+						((Customer) user).setBirthday(userInfo[2]);
+						user.setPhoneNumber(userInfo[3]);
+						user.setAddress(userInfo[4]);
+						user.setZip(userInfo[5]);
+						loginView.showAlert("Your information has been updated");
 
 					}
 				}
 				if (user instanceof Establishment) {
-					if(userInfo[0].isEmpty() || userInfo[3].isEmpty() || userInfo[4].isEmpty() || userInfo[5].isEmpty()){
+					if (userInfo[0].isEmpty() || userInfo[3].isEmpty() || userInfo[4].isEmpty()
+							|| userInfo[5].isEmpty()) {
 						loginView.showAlert("You have left one or more field blank");
 
-					}
-					else{
-					user.setName(userInfo[0]);
-					user.setPhoneNumber(userInfo[3]);
-					user.setAddress(userInfo[4]);
-					user.setZip(userInfo[5]);
-					((Establishment) user).setType(userInfo[6]);
-					loginView.showAlert("Your information has been updated");
+					} else {
+						user.setName(userInfo[0]);
+						user.setPhoneNumber(userInfo[3]);
+						user.setAddress(userInfo[4]);
+						user.setZip(userInfo[5]);
+						((Establishment) user).setType(userInfo[6]);
+						loginView.showAlert("Your information has been updated");
 
 					}
 				}
-				System.out.println(user.toString());
+				// System.out.println(user.toString());
 				writeUserSetFile(userSet);
-				
+
 			}
 
 			@Override
 			public void returnButtonClicked(MyWindowEvent ev) {
 				returnEvent = mainView.getHistoryListViewItems();
+				if(findEvent(returnEvent) == null){
+					
+				}else{
 				event = findEvent(returnEvent);
 				mainView.showCustomerReturnView();
-				System.out.println(event);
+				// System.out.println(event);
+				}
 			}
 
 			@Override
 			public void confirmButtonClicked(MyWindowEvent ev) {
 
 				int returningTickets = mainView.getTicketReturningAmount();
+				if(returningTickets == 0){
+					loginView.showAlert("Invalid amount entered");
+				}else{
 				int size = returnEvent.getTicketArrayList().size();
 				double total = returningTickets * Integer.valueOf(event.getTicket().getPrice());
 				double totalWithTax = total * event.getTax();
@@ -506,9 +514,12 @@ public class UserController {
 					loginView.showAlert(
 							"You have " + size + " tickets, you can not return " + returningTickets + " tickets.");
 				} else {
+					if(customerMoney < 1){
+						returnEvent.setTicketPrice("0");
+					}else{
 					returnEvent.setTicketPrice(String.valueOf(customerMoney));
+					}
 					returnEvent.removeTicketsArrayList(returningTickets);
-
 					event.addToTicketsArrayList(returningTickets);
 
 					establishment.removeFromSet(estEvent);
@@ -516,19 +527,18 @@ public class UserController {
 					loginView.showAlert("You have returned " + returningTickets + " tickets, Your total refund is $"
 							+ total + "\nThank you.");
 				}
-				System.out.println(returnEvent.getTicketArrayList().size());
+				// System.out.println(returnEvent.getTicketArrayList().size());
 				writeUserSetFile(userSet);
 				writeEventsSetFile(allEventsSet);
-
+				}
 			}
 
 			@Override
 			public void infoButtonClicked(MyWindowEvent ev) {
 				event = mainView.getEstablishmentHistoryViewItems();
-				if(event == null){
+				if (event == null) {
 					loginView.showAlert("No event is picked");
-				}
-				else if (event.getCustomerArrayList() == null) {
+				} else if (event.getCustomerArrayList() == null) {
 					loginView.showAlert("No Customers for this even yet");
 				} else {
 
@@ -537,16 +547,6 @@ public class UserController {
 
 					Customer[] custArray = new Customer[customerList.size()];
 					customerList.toArray(custArray);
-					Set<Event> set = new HashSet<Event>();
-
-					for (int i = 0; i < custArray.length; i++) {
-						set = custArray[i].getEventSet();
-						// System.out.println(set);
-					}
-					// System.out.println(event.getInitialTicketSold());
-					// System.out.println(event.getTicketReturned());
-					// System.out.println(event.getTotalTicketSold());
-					// System.out.println(event.getProfit());
 
 					mainView.showEstablishmentInfoView();
 					mainView.showMyCustomerList(customers);
@@ -558,11 +558,11 @@ public class UserController {
 
 			@Override
 			public void allEmployeesItemClicked(MyWindowEvent ev) {
-				Establishment establishment = (Establishment)(user);
-				
+				Establishment establishment = (Establishment) (user);
+
 				ArrayList<Employee> eventList = getAllEmployess(establishment);
 				ObservableList<Employee> events = FXCollections.observableArrayList(eventList);
-				
+
 				mainView.showAllEmployeesView();
 				mainView.showEmployeeList(events);
 			}
@@ -570,7 +570,7 @@ public class UserController {
 			@Override
 			public void addEmployeesItemClicked(MyWindowEvent ev) {
 				mainView.showAddEmployeesView();
-				
+
 			}
 
 			@Override
@@ -581,83 +581,80 @@ public class UserController {
 				String position = employeeInfo[2];
 				String salary = employeeInfo[3];
 				String status = "hired";
-				if(checkIfFieldsAreWrong(employeeInfo)== true){
+				if (checkIfFieldsAreWrong(employeeInfo) == true) {
 					loginView.showAlert("You have left one or more fields blanks");
-				}else{
-				
-				Establishment establishment = (Establishment)(user);
-				Employee employee = new Employee(name,lastName,position,salary,status);
-				if(establishment.getEmployeeSet() == null){
-					establishment.createEmployeeSet();
-					establishment.putToEmployeeSet(employee);
-				}else{
-					establishment.putToEmployeeSet(employee);
-				}
-				loginView.showAlert("You have hired - \nName : "+name+"\nLast Name : "+lastName+"\nPosition : "+position+"\nSalary : "+salary);
-				writeUserSetFile(userSet);
-				System.out.println(establishment.getEmployeeSet());
-				
-				//System.out.println(Arrays.toString(employeeInfo));
+				} else {
+
+					Establishment establishment = (Establishment) (user);
+					Employee employee = new Employee(name, lastName, position, salary, status);
+					if (establishment.getEmployeeSet() == null) {
+						establishment.createEmployeeSet();
+						establishment.putToEmployeeSet(employee);
+					} else {
+						establishment.putToEmployeeSet(employee);
+					}
+					loginView.showAlert("You have hired - \nName : " + name + "\nLast Name : " + lastName
+							+ "\nPosition : " + position + "\nSalary : " + salary);
+					writeUserSetFile(userSet);
+					System.out.println(establishment.getEmployeeSet());
+
+					// System.out.println(Arrays.toString(employeeInfo));
 				}
 			}
 
 			@Override
 			public void searchEmployeeButtonClicked(MyWindowEvent ev) {
-				Establishment establishment = (Establishment)(user);
+				Establishment establishment = (Establishment) (user);
 				String lastName = mainView.getEmployeeLastName().toLowerCase();
 				ArrayList<Employee> employeeList = findEmployee(lastName);
-				
-				if(employeeList.isEmpty()){
+
+				if (employeeList.isEmpty()) {
 					loginView.showAlert("No Employe Found");
 					ArrayList<Employee> allEmployees = getAllEmployess(establishment);
 					ObservableList<Employee> employees = FXCollections.observableArrayList(allEmployees);
 					mainView.showEmployeeList(employees);
 
+				} else {
 
-				}else{
-					
 					ObservableList<Employee> employees = FXCollections.observableArrayList(employeeList);
-					
+
 					mainView.showEmployeeList(employees);
 				}
-				
+
 			}
 
 			@Override
 			public void firedEmployeeInfoButtonClicked(MyWindowEvent ev) {
-				Establishment establishment = (Establishment)(user);
-				
+				Establishment establishment = (Establishment) (user);
+
 				ArrayList<Employee> eventList = getAllFiredEmployess(establishment);
 				ObservableList<Employee> events = FXCollections.observableArrayList(eventList);
-				
-				mainView.showEmployeeList(events);
-				
-			}
 
-			
+				mainView.showEmployeeList(events);
+
+			}
 
 			@Override
 			public void hiredEmployeeInfoButtonClicked(MyWindowEvent ev) {
-				Establishment establishment = (Establishment)(user);
-				
+				Establishment establishment = (Establishment) (user);
+
 				ArrayList<Employee> eventList = getAllHiredEmployess(establishment);
 				ObservableList<Employee> events = FXCollections.observableArrayList(eventList);
-				
+
 				mainView.showEmployeeList(events);
-				
+
 			}
 
 			@Override
 			public void fireEmployeeButtonClicked(MyWindowEvent ev) {
 				Employee employee = mainView.getEmployeeListViewItems();
-				if(employee == null){
+				if (employee == null) {
 					loginView.showAlert("No Employee is selected");
-				}if(employee.getStatus().equals("fired")){
+				} else if (employee.getStatus().equals("fired")) {
 					loginView.showAlert("This employee is already fired");
-				}
-				else{
+				} else {
 					employee.setStatus("fired");
-					loginView.showAlert("You have fired : "+employee);
+					loginView.showAlert("You have fired : " + employee);
 				}
 				writeUserSetFile(userSet);
 
@@ -715,11 +712,11 @@ public class UserController {
 			allEventsSet = (HashSet<Event>) reader.readObject();
 			// printSet();
 		} catch (FileNotFoundException e) {
-			System.out.println("Fof exp reading set");
+			// System.out.println("Fof exp reading set");
 		} catch (IOException e) {
-			System.out.println("Ioexp reading set");
+			// System.out.println("Ioexp reading set");
 		} catch (ClassNotFoundException e) {
-			System.out.println("Class not found exp reading set");
+			// System.out.println("Class not found exp reading set");
 		}
 	}
 
@@ -786,16 +783,22 @@ public class UserController {
 		Event[] array = new Event[allEventsSet.size()];
 		allEventsSet.toArray(array);
 		Event getEvent = new Event();
-
+		if(event == null){
+			loginView.showAlert("There are no purchases to return");
+			return null;
+		}else{
+			
+		
 		for (int i = 0; i < array.length; i++) {
 			if (array[i].getEventZIP().equals(event.getEventZIP())
 					&& array[i].getEventName().equals(event.getEventName())
 					&& array[i].getEventStartTime().equals(event.getEventStartTime())) {
 				getEvent = array[i];
+				}
 			}
 		}
 		return getEvent;
-
+		
 	}
 
 	public ArrayList<Event> getAllEvents() {
@@ -816,43 +819,43 @@ public class UserController {
 
 	public ArrayList<Event> getCustomerEvents() {
 		Customer customer = (Customer) (user);
-		if(customer.getEventSet() == null){
+		if (customer.getEventSet() == null) {
 			loginView.showAlert("You have not made any purchases");
 			ArrayList<Event> emptyList = new ArrayList<Event>();
 			return emptyList;
-		}else{
-		Event[] array = new Event[customer.getEventSet().size()];
-		customer.getEventSet().toArray(array);
-		ArrayList<Event> eventList = new ArrayList<Event>();
+		} else {
+			Event[] array = new Event[customer.getEventSet().size()];
+			customer.getEventSet().toArray(array);
+			ArrayList<Event> eventList = new ArrayList<Event>();
 
-		for (int i = 0; i < array.length; i++) {
+			for (int i = 0; i < array.length; i++) {
 
-			eventList.add(array[i]);
+				eventList.add(array[i]);
 
-		}
-		Collections.reverse(eventList);
-		return eventList;
+			}
+			Collections.reverse(eventList);
+			return eventList;
 		}
 	}
 
 	public ArrayList<Event> getEstablishmentEvents() {
 		Establishment establishment = (Establishment) (user);
-		if(establishment.getEventSet() == null){
+		if (establishment.getEventSet() == null) {
 			ArrayList<Event> emptyList = new ArrayList<Event>();
 			return emptyList;
-		}else{
-		Event[] array = new Event[establishment.getEventSet().size()];
+		} else {
+			Event[] array = new Event[establishment.getEventSet().size()];
 
-		establishment.getEventSet().toArray(array);
-		ArrayList<Event> eventList = new ArrayList<Event>();
-		
-		for (int i = 0; i < array.length; i++) {
+			establishment.getEventSet().toArray(array);
+			ArrayList<Event> eventList = new ArrayList<Event>();
 
-			eventList.add(array[i]);
+			for (int i = 0; i < array.length; i++) {
 
-		}
-		Collections.reverse(eventList);
-		return eventList;
+				eventList.add(array[i]);
+
+			}
+			Collections.reverse(eventList);
+			return eventList;
 		}
 	}
 
@@ -902,7 +905,7 @@ public class UserController {
 
 	public void showEstablishmentEvents() {
 		if (eventList.isEmpty()) {
-			
+
 		} else {
 			mainView.showEstablishmentEvents(events);
 		}
@@ -920,83 +923,91 @@ public class UserController {
 		}
 		return null;
 	}
-	public ArrayList<Employee> findEmployee(String lastName){
-		Establishment establishment = (Establishment)(user);
+
+	public ArrayList<Employee> findEmployee(String lastName) {
+		Establishment establishment = (Establishment) (user);
+		if (establishment.getEmployeeSet() == null) {
+			ArrayList<Employee> emptyList = new ArrayList<Employee>();
+			return emptyList;
+		}
 		Employee[] array = new Employee[establishment.getEmployeeSet().size()];
 		establishment.getEmployeeSet().toArray(array);
 		ArrayList<Employee> employeeList = new ArrayList<Employee>();
-		
-		for(int i =0; i<array.length;i++){
-			if(array[i].getLastName().equals(lastName)){
-				 employeeList.add(array[i]);
+
+		for (int i = 0; i < array.length; i++) {
+			if (array[i].getLastName().equals(lastName)) {
+				employeeList.add(array[i]);
 			}
 		}
 		return employeeList;
 	}
-	public ArrayList<Employee> getAllEmployess(Establishment establishment){
-		
-		if(establishment.getEmployeeSet() == null){
+
+	public ArrayList<Employee> getAllEmployess(Establishment establishment) {
+
+		if (establishment.getEmployeeSet() == null) {
 			ArrayList<Employee> emptyList = new ArrayList<Employee>();
 			return emptyList;
-		}else{
+		} else {
 			Employee[] array = new Employee[establishment.getEmployeeSet().size()];
 
-		establishment.getEmployeeSet().toArray(array);
-		ArrayList<Employee> employeeList = new ArrayList<Employee>();
-		
-		for (int i = 0; i < array.length; i++) {
+			establishment.getEmployeeSet().toArray(array);
+			ArrayList<Employee> employeeList = new ArrayList<Employee>();
 
-			employeeList.add(array[i]);
+			for (int i = 0; i < array.length; i++) {
 
-		}
-		Collections.reverse(employeeList);
-		return employeeList;
+				employeeList.add(array[i]);
+
+			}
+			Collections.reverse(employeeList);
+			return employeeList;
 		}
 	}
-		
-		private ArrayList<Employee> getAllFiredEmployess(Establishment establishment) {
-			if(establishment.getEmployeeSet() == null){
-				ArrayList<Employee> emptyList = new ArrayList<Employee>();
-				return emptyList;
-			}else{
-				Employee[] array = new Employee[establishment.getEmployeeSet().size()];
+
+	private ArrayList<Employee> getAllFiredEmployess(Establishment establishment) {
+		if (establishment.getEmployeeSet() == null) {
+			ArrayList<Employee> emptyList = new ArrayList<Employee>();
+			return emptyList;
+		} else {
+			Employee[] array = new Employee[establishment.getEmployeeSet().size()];
 
 			establishment.getEmployeeSet().toArray(array);
 			ArrayList<Employee> employeeList = new ArrayList<Employee>();
-			
+
 			for (int i = 0; i < array.length; i++) {
-				if(array[i].getStatus().equals("fired")){
+				if (array[i].getStatus().equals("fired")) {
 					employeeList.add(array[i]);
 				}
 
 			}
 			Collections.reverse(employeeList);
 			return employeeList;
-			}
+		}
 	}
-		private ArrayList<Employee> getAllHiredEmployess(Establishment establishment) {
-			if(establishment.getEmployeeSet() == null){
-				ArrayList<Employee> emptyList = new ArrayList<Employee>();
-				return emptyList;
-			}else{
-				Employee[] array = new Employee[establishment.getEmployeeSet().size()];
+
+	private ArrayList<Employee> getAllHiredEmployess(Establishment establishment) {
+		if (establishment.getEmployeeSet() == null) {
+			ArrayList<Employee> emptyList = new ArrayList<Employee>();
+			return emptyList;
+		} else {
+			Employee[] array = new Employee[establishment.getEmployeeSet().size()];
 
 			establishment.getEmployeeSet().toArray(array);
 			ArrayList<Employee> employeeList = new ArrayList<Employee>();
-			
+
 			for (int i = 0; i < array.length; i++) {
-				if(array[i].getStatus().equals("hired")){
+				if (array[i].getStatus().equals("hired")) {
 					employeeList.add(array[i]);
 				}
 
 			}
 			Collections.reverse(employeeList);
 			return employeeList;
-			}
+		}
 	}
-	public boolean checkIfFieldsAreWrong(String[] info){
-		for(int i=0; i<info.length;i++){
-			if(info[i].isEmpty()){
+
+	public boolean checkIfFieldsAreWrong(String[] info) {
+		for (int i = 0; i < info.length; i++) {
+			if (info[i].isEmpty()) {
 				return true;
 			}
 		}
