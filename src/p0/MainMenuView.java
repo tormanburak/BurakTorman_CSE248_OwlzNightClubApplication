@@ -23,6 +23,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -101,6 +102,7 @@ public class MainMenuView {
 
 	private String[] userInfo = new String[7];
 	private String[] eventInfo = new String[5];
+	private String[] employeeInfo = new String[4];
 	private String eventZIP;
 	private TextField priceField;
 	private ComboBox<Integer> ticketComboBox;
@@ -111,6 +113,19 @@ public class MainMenuView {
 	private TextField netProfitField;
 	private TextField intialTicketssoldField;
 	private TextField ticketsReturnedField;
+	private MenuItem addEmployeesMenuItem;
+	private Menu employeeMenu;
+	private MenuItem allEmployeesMenuItem;
+	private Button employeeInfoButton;
+	private Button fireEmployeeButton;
+	private TextField searchEmployeeField;
+	private Region employeeListView;
+	private Button searchEmployeeButton;
+	private TextField employeeNameField;
+	private TextField employeeLastNameField;
+	private TextField employeePositionField;
+	private TextField employeeSalaryField;
+	private Button hireButton;
 
 
 	
@@ -464,6 +479,7 @@ public class MainMenuView {
 		menuBar.prefWidthProperty().bind(stage.widthProperty());
 		profileMenu = new Menu("Profile");
 		eventMenu = new Menu("Event");
+		employeeMenu = new Menu("Employees");
 		establishmentMyEventListView = new ListView<Event>();
 		establishmentMyEventListView.setPrefWidth(1000);
 		establishmentMyEventListView.setPrefHeight(600);
@@ -471,10 +487,13 @@ public class MainMenuView {
 		historyMenuItem = new MenuItem("History");
 		profileMenuItem = new MenuItem("Profile");
 		createEventMenuItem = new MenuItem("Set Event");
+		addEmployeesMenuItem = new MenuItem("Add Employee");
+		allEmployeesMenuItem = new MenuItem("All Employess");
 		
 		profileMenu.getItems().addAll(profileMenuItem,historyMenuItem);
 		eventMenu.getItems().add(createEventMenuItem);
-		menuBar.getMenus().addAll(profileMenu,eventMenu);
+		employeeMenu.getItems().addAll(addEmployeesMenuItem,allEmployeesMenuItem);
+		menuBar.getMenus().addAll(profileMenu,eventMenu,employeeMenu);
 		Label infoLabel = new Label("My Events");
 		infoLabel.setFont(Font.font("AR CARTER", FontPosture.ITALIC, 40));
 
@@ -487,6 +506,8 @@ public class MainMenuView {
 		profileMenuItemAction();
 		createEventMenuItemAction();
 		historyMenuItemAction();
+		allEmployeesItemAction();
+		addEmployeesItemAction();
 		
 		Group root = new Group();
 		scene = new Scene(root,1500,800,Color.DEEPPINK);
@@ -496,6 +517,7 @@ public class MainMenuView {
 		stage.setScene(scene);
 		stage.show();
 	}
+
 	public GridPane eventCreateView(){
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(5));
@@ -643,6 +665,83 @@ public class MainMenuView {
 		return gridPane;
 		
 	}
+	public GridPane myEmployeesView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(20);
+		
+		Label searchEmployee = new Label("Search by last name");
+		searchEmployeeField = new TextField();
+		 searchEmployeeButton = new Button("Search");	
+		 employeeInfoButton = new Button("Info");
+		 fireEmployeeButton = new Button("Fire Employee");
+		 employeeListView = new ListView<Event>();
+		 employeeListView.setPrefWidth(600);
+		
+		HBox buttonBox = new HBox(10);
+		buttonBox.getChildren().addAll(cancelButton,employeeInfoButton, fireEmployeeButton);
+		
+		gridPane.add(searchEmployee, 0, 1);
+		gridPane.add(searchEmployeeField, 1, 1);
+		gridPane.add(searchEmployeeButton, 2, 1);
+		gridPane.add(employeeListView, 1, 4,50,10);
+		gridPane.add(buttonBox, 2, 16);
+	
+		cancelButtonSetOnAction();
+
+		
+		return gridPane;
+		
+	}
+	public GridPane addEmployeeView(){
+		GridPane gridPane = new GridPane();
+		gridPane.setPadding(new Insets(5));
+		gridPane.setAlignment(Pos.CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(20);
+		
+		Label employeeNameLabel = new Label("Name");
+		Label employeeLastNameLabel = new Label("Last Name");
+		Label employeePositionLabel = new Label("Position");
+		Label employeeSalaryLabel = new Label("Hourly Salary");
+		
+
+
+		 employeeNameField = new TextField();
+		 employeeLastNameField = new TextField();
+		 employeePositionField = new TextField();
+		 employeeSalaryField = new TextField();
+
+		
+		hireButton = new Button("Hire");
+
+		
+		HBox buttonBox = new HBox(10);
+		buttonBox.getChildren().addAll(cancelButton,hireButton);
+		
+		gridPane.add(employeeNameLabel, 0, 1);
+		gridPane.add(employeeLastNameLabel, 0, 2);
+		gridPane.add(employeePositionLabel, 0, 3);
+		gridPane.add(employeeSalaryLabel, 0, 4);
+		
+
+		
+		gridPane.add(employeeNameField, 1, 1);
+		gridPane.add(employeeLastNameField, 1, 2);
+		gridPane.add(employeePositionField, 1, 3);
+		gridPane.add(employeeSalaryField, 1, 4);
+		
+		gridPane.add(buttonBox,2,6);
+		
+		hireButtonAction();
+		cancelButtonSetOnAction();
+
+		return gridPane;
+		
+	}
+	
 	
 	//-----------------------------------------------------------------------------------------------------------------------------------------------------------
 	//below this line includes all methods for buttons, menu items, etc.
@@ -760,6 +859,14 @@ public class MainMenuView {
 			}
 		});
 	}
+	public void hireButtonAction(){
+		hireButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null ){
+				windowListener.hireButtonClicked(ev);
+			}
+		});
+	}
 	public void createEventMenuItemAction(){
 		createEventMenuItem.setOnAction(e->{
 			MyWindowEvent ev = new MyWindowEvent(this);
@@ -767,6 +874,23 @@ public class MainMenuView {
 				windowListener.eventCreateMenuItemClicked(ev);
 			}
 		});
+	}
+	public void allEmployeesItemAction(){
+		allEmployeesMenuItem.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null ){
+				windowListener.allEmployeesItemClicked(ev);
+			}
+		});
+	}
+	public void addEmployeesItemAction() {
+		addEmployeesMenuItem.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null ){
+				windowListener.addEmployeesItemClicked(ev);
+			}
+		});
+		
 	}
 	public void searchEventButtonAction(){
 		searchEventButton.setOnAction(e->{
@@ -776,6 +900,7 @@ public class MainMenuView {
 			}
 		});
 	}
+	
 	public void setWindowListener(MyMainWindowListener windowListener) {
 		this.windowListener = windowListener;
 	}
@@ -817,6 +942,12 @@ public class MainMenuView {
 	}
 	public void showEstablishmentInfoView(){
 		borderPane.setCenter(establishmentInfoView());
+	}
+	public void showAllEmployeesView(){
+		borderPane.setCenter(myEmployeesView());
+	}
+	public void showAddEmployeesView(){
+		borderPane.setCenter(addEmployeeView());
 	}
 	public void radioButtonsSetAction(){
 		customerRadioButton.setOnAction(e->{
@@ -944,6 +1075,13 @@ public class MainMenuView {
 		eventInfo[4] = eventStartTimeField.getText();
 		return eventInfo;
 		
+	}
+	public String[] getEmployeeInfo(){
+		employeeInfo[0]= employeeNameField.getText();
+		employeeInfo[1]= employeeLastNameField.getText();
+		employeeInfo[2]= employeePositionField.getText();
+		employeeInfo[3]= employeeSalaryField.getText();
+		return employeeInfo;
 	}
 	public int getTicketAmount(){
 		int ticketAmount = Integer.parseInt(ticketAmountField.getText());

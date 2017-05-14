@@ -35,6 +35,12 @@ public interface MyMainWindowListener extends EventListener {
 	public void confirmButtonClicked(MyWindowEvent ev);
 
 	public void infoButtonClicked(MyWindowEvent ev);
+
+	public void allEmployeesItemClicked(MyWindowEvent ev);
+
+	public void addEmployeesItemClicked(MyWindowEvent ev);
+
+	public void hireButtonClicked(MyWindowEvent ev);
 	
 
 

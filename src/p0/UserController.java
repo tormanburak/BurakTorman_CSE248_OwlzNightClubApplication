@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -153,17 +154,20 @@ public class UserController {
 								mainView.showAllEvents(events);
 							}
 						} else if (user.hasProfile() && user instanceof Establishment) {
+							
 
 							ArrayList<Event> eventList = getEstablishmentEvents();
 							ObservableList<Event> events = FXCollections.observableArrayList(eventList);
 
 							mainView.showEstablishmentView();
-							if (eventList.isEmpty()) {
+								if (eventList.isEmpty()) {
 								loginView.showAlert("You have no events at this moment");
-							} else {
+								} else {
 
 								mainView.showEstablishmentEvents(events);
-							}
+								}
+							
+
 						}
 
 						else {
@@ -347,8 +351,8 @@ public class UserController {
 			public void purchaseButtonClicked(MyWindowEvent ev) {
 				double price = mainView.getTicketPricePurchased();
 				int ticketAmount = mainView.getTicketAmountPurchased();
-				double total = calculateCost(ticketAmount, price,event.getTax());
-				
+				double total = calculateCost(ticketAmount, price, event.getTax());
+
 				Customer customer = (Customer) (user);
 				Establishment establishment = new Establishment();
 				establishment = (Establishment) findEstablishment(event);
@@ -377,7 +381,8 @@ public class UserController {
 							"There are " + event.getTicketArrayList().size() + " tickets left for this event");
 				} else {
 
-					loginView.showAlert("You have purchased " + ticketAmount + " tickets.\nYour total plus 8.875% tax is = $" + total);
+					loginView.showAlert("You have purchased " + ticketAmount
+							+ " tickets.\nYour total plus 8.875% tax is = $" + total);
 					removeTicketsFromArrayList(event, ticketAmount);
 					establishment.removeFromSet(estEvent);
 					establishment.putToSet(event);
@@ -393,6 +398,7 @@ public class UserController {
 			public void historyMenuItemClicked(MyWindowEvent ev) {
 				ArrayList<Event> eventList;
 				ObservableList<Event> events;
+				
 
 				if (user instanceof Customer) {
 					eventList = getCustomerEvents();
@@ -406,7 +412,6 @@ public class UserController {
 
 					mainView.showEstablishmentHistoryView();
 					mainView.showEstablishmentHistory(events);
-					
 
 				}
 
@@ -452,7 +457,7 @@ public class UserController {
 				int returningTickets = mainView.getTicketReturningAmount();
 				int size = returnEvent.getTicketArrayList().size();
 				double total = returningTickets * Integer.valueOf(event.getTicket().getPrice());
-				double totalWithTax = total*event.getTax();
+				double totalWithTax = total * event.getTax();
 				total = total + totalWithTax;
 
 				Establishment establishment = new Establishment();
@@ -460,16 +465,15 @@ public class UserController {
 				Event estEvent = findEstEvent(establishment, event);
 				double customerMoney = Double.valueOf(returnEvent.getTicket().getPrice()) - total;
 
-							
 				if (returningTickets > size) {
 					loginView.showAlert(
 							"You have " + size + " tickets, you can not return " + returningTickets + " tickets.");
 				} else {
 					returnEvent.setTicketPrice(String.valueOf(customerMoney));
 					returnEvent.removeTicketsArrayList(returningTickets);
-					
+
 					event.addToTicketsArrayList(returningTickets);
-					
+
 					establishment.removeFromSet(estEvent);
 					establishment.putToSet(event);
 					loginView.showAlert("You have returned " + returningTickets + " tickets, Your total refund is $"
@@ -484,37 +488,75 @@ public class UserController {
 			@Override
 			public void infoButtonClicked(MyWindowEvent ev) {
 				event = mainView.getEstablishmentHistoryViewItems();
-				if(event.getCustomerArrayList() == null){
+				if(event == null){
+					loginView.showAlert("No event is picked");
+				}
+				else if (event.getCustomerArrayList() == null) {
 					loginView.showAlert("No Customers for this even yet");
-				}else{
-					
-				
-				ArrayList<Customer> customerList = event.getCustomerArrayList();
-				ObservableList<Customer> customers = FXCollections.observableArrayList(customerList);
-				
-				
-				Customer[] custArray = new Customer[customerList.size()];
-				customerList.toArray(custArray);
-				Set<Event> set = new HashSet<Event>();
-				
-					for(int i =0; i<custArray.length; i++){
-					set = custArray[i].getEventSet();
-					//System.out.println(set);
+				} else {
+
+					ArrayList<Customer> customerList = event.getCustomerArrayList();
+					ObservableList<Customer> customers = FXCollections.observableArrayList(customerList);
+
+					Customer[] custArray = new Customer[customerList.size()];
+					customerList.toArray(custArray);
+					Set<Event> set = new HashSet<Event>();
+
+					for (int i = 0; i < custArray.length; i++) {
+						set = custArray[i].getEventSet();
+						// System.out.println(set);
 					}
-//				System.out.println(event.getInitialTicketSold());
-//				System.out.println(event.getTicketReturned());
-//				System.out.println(event.getTotalTicketSold());
-//				System.out.println(event.getProfit());
-				
-				mainView.showEstablishmentInfoView();
-				mainView.showMyCustomerList(customers);
-				mainView.setFinancialInfo(event.getInitialTicketSold(), event.getTicketReturned(), event.getTotalTicketSold(), event.getProfit());
+					// System.out.println(event.getInitialTicketSold());
+					// System.out.println(event.getTicketReturned());
+					// System.out.println(event.getTotalTicketSold());
+					// System.out.println(event.getProfit());
+
+					mainView.showEstablishmentInfoView();
+					mainView.showMyCustomerList(customers);
+					mainView.setFinancialInfo(event.getInitialTicketSold(), event.getTicketReturned(),
+							event.getTotalTicketSold(), event.getProfit());
 
 				}
 			}
-			
+
+			@Override
+			public void allEmployeesItemClicked(MyWindowEvent ev) {
+				mainView.showAllEmployeesView();
+				
+			}
+
+			@Override
+			public void addEmployeesItemClicked(MyWindowEvent ev) {
+				mainView.showAddEmployeesView();
+				
+			}
+
+			@Override
+			public void hireButtonClicked(MyWindowEvent ev) {
+				String[] employeeInfo = mainView.getEmployeeInfo();
+				String name = employeeInfo[0];
+				String lastName = employeeInfo[1];
+				String position = employeeInfo[2];
+				String salary = employeeInfo[3];
+				String status = "hired";
+				
+				Establishment establishment = (Establishment)(user);
+				Employee employee = new Employee(name,lastName,position,salary,status);
+				if(establishment.getEmployeeSet() == null){
+					establishment.createEmployeeSet();
+					establishment.putToEmployeeSet(employee);
+				}else{
+					establishment.putToEmployeeSet(employee);
+				}
+				loginView.showAlert("You have hired - \nName : "+name+"\nLast Name : "+lastName+"\nPosition : "+position+"\nSalary : "+salary);
+				writeUserSetFile(userSet);
+				System.out.println(establishment.getEmployeeSet());
+				
+				//System.out.println(Arrays.toString(employeeInfo));
+			}
+
 		});
-		
+
 	}
 
 	public void writeUserSetFile(Set<User> userSet) {
@@ -650,7 +692,7 @@ public class UserController {
 
 	public ArrayList<Event> getAllEvents() {
 		Event[] array = new Event[allEventsSet.size()];
-		
+
 		allEventsSet.toArray(array);
 		ArrayList<Event> eventList = new ArrayList<Event>();
 
@@ -682,11 +724,15 @@ public class UserController {
 
 	public ArrayList<Event> getEstablishmentEvents() {
 		Establishment establishment = (Establishment) (user);
+		if(establishment.getEventSet() == null){
+			ArrayList<Event> emptyList = new ArrayList<Event>();
+			return emptyList;
+		}else{
 		Event[] array = new Event[establishment.getEventSet().size()];
-		
+
 		establishment.getEventSet().toArray(array);
 		ArrayList<Event> eventList = new ArrayList<Event>();
-
+		
 		for (int i = 0; i < array.length; i++) {
 
 			eventList.add(array[i]);
@@ -694,12 +740,13 @@ public class UserController {
 		}
 		Collections.reverse(eventList);
 		return eventList;
-
+		}
 	}
-	public double calculateCost(int amount, double price, double tax){
-		double cost = amount*price;
-		double taxOfCost = tax*cost;
-		double total = cost+taxOfCost;
+
+	public double calculateCost(int amount, double price, double tax) {
+		double cost = amount * price;
+		double taxOfCost = tax * cost;
+		double total = cost + taxOfCost;
 		return total;
 	}
 

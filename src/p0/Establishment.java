@@ -7,6 +7,7 @@ import java.util.Set;
 public class Establishment extends User implements Serializable{
 	private String type;
 	private Set<Event> eventSet;
+	private Set<Employee> employeeSet;
 	
 	public Establishment(String id, String password, String name,String phoneNumber ,String address,String zip,String type) {
 		super(id, password,name,phoneNumber, address, zip);
@@ -41,6 +42,24 @@ public class Establishment extends User implements Serializable{
 	}
 	public void setEventSet(Set<Event> eventSet) {
 		this.eventSet = eventSet;
+	}
+	
+	
+	public void putToEmployeeSet(Employee emp){
+		employeeSet.add(emp);
+	}
+	public void removeFromEmployeeSet(Employee emp){
+		employeeSet.remove(emp);
+	}
+	
+	public void createEmployeeSet(){
+		employeeSet = new LinkedHashSet();
+	}
+	public Set<Employee> getEmployeeSet() {
+		return employeeSet;
+	}
+	public void setEmployeeSet(Set<Employee> employeeSet) {
+		this.employeeSet = employeeSet;
 	}
 
 	@Override
