@@ -406,7 +406,8 @@ public class UserController {
 
 					setCustomersEventInfo(customerEvent, String.valueOf(total), ticketAmount);
 					customerTicketArrayList = customerEvent.getTicketArrayList();
-
+					customerEvent.setEventDate(event.getEventDate());
+					
 					if (customer.getEventSet() == null) {
 						customer.createEventSet();
 						customer.putToSet(customerEvent);
