@@ -136,7 +136,7 @@ public class UserController {
 					user = findUser(v);
 
 				}
-				// printSet();
+				printSet();
 				if (user != null) {
 					if (checkUser(user.getId(), user.getPassword()) == false) {
 						loginView.showAlert("Password or ID is incorrect");
@@ -252,37 +252,42 @@ public class UserController {
 				String zip = userInfo[5];
 				String type = userInfo[6];
 
-				if (mainView.checkFields(zip) == 0) {
-					loginView.showAlert("Invalid zip");
-				} else {
+//				if (mainView.checkFields(zip) == 0) {
+//					loginView.showAlert("Invalid zip");
+//				} else {
 
 					if (customerType.equals("customer")) {
-						if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
-								|| birthday.isEmpty() || lastName.isEmpty()) {
-							loginView.showAlert("You have left one or more fields blanks");
-						} else {
+//						if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
+//								|| birthday.isEmpty() || lastName.isEmpty()) {
+//							loginView.showAlert("You have left one or more fields blanks");
+//						} else {
 							user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
 									address, zip);
+
 							eventList = getAllEvents();
+
 							events = FXCollections.observableArrayList(eventList);
 
 							mainView.showCustomerView();
 							showAllEvents();
-						}
-					} else if (customerType.equals("establishment")) {
-						if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
-								|| type.isEmpty()) {
-							loginView.showAlert("You have left one or more fields blanks");
-						} else {
+				//		}
+					}  if (customerType.equals("establishment")) {
+//						if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
+//								|| type.isEmpty()) {
+//							loginView.showAlert("You have left one or more fields blanks");
+//						} else {
 							user = new Establishment(user.getId(), user.getPassword(), name, phoneNumber, address, zip,
 									type);
+
 							mainView.showEstablishmentView();
-						}
+					//	}
 					}
 
-				}
-				addUser(user);
+				//}
+			addUser(user);
 
+			System.out.println(user);
+			System.out.println(userSet);
 			}
 
 			@Override
@@ -380,6 +385,7 @@ public class UserController {
 			public void purchaseButtonClicked(MyWindowEvent ev) {
 				double price = mainView.getTicketPricePurchased();
 				int ticketAmount = mainView.getTicketAmountPurchased();
+				
 				if (ticketAmount == 0) {
 					loginView.showAlert("You have not picked a ticket amount to return");
 				} else {
@@ -703,7 +709,7 @@ public class UserController {
 			@SuppressWarnings("resource")
 			ObjectInputStream reader = new ObjectInputStream(new FileInputStream("userSet.dat"));
 			userSet = (HashSet<User>) reader.readObject();
-			// printSet();
+			 printSet();
 		} catch (FileNotFoundException e) {
 			System.out.println("Fof exp reading set");
 		} catch (IOException e) {
