@@ -101,7 +101,7 @@ public class MainMenuView {
 	private ListView<Event> customerHistoryListView;
 
 	private String[] userInfo = new String[7];
-	private String[] eventInfo = new String[5];
+	private String[] eventInfo = new String[6];
 	private String[] employeeInfo = new String[4];
 	private String eventZIP;
 	private TextField priceField;
@@ -126,6 +126,7 @@ public class MainMenuView {
 	private TextField employeePositionField;
 	private TextField employeeSalaryField;
 	private Button hireButton;
+	private TextField eventDateField;
 
 
 	
@@ -528,7 +529,8 @@ public class MainMenuView {
 		Label eventNameLabel = new Label("Event Name");
 		Label eventAddressLabel = new Label("Event Address");
 		Label eventTypeLabel = new Label("Event Type");
-		Label eventStartTimeLabel = new Label("Event Time");
+		Label eventStartTimeLabel = new Label("Event Time, (ex: 6pm-4am)");
+		Label eventDateLabel = new Label("Event Date, (ex: 5/14/17)");
 		Label eventZip = new Label("Event ZIP");
 		Label ticketAmountLabel = new Label("Ticket quantity");
 		Label ticketPriceLabel = new Label("Ticket price");
@@ -538,6 +540,7 @@ public class MainMenuView {
 		 eventAddressField = new TextField();
 		 eventTypeField = new TextField();
 		 eventStartTimeField = new TextField();
+		 eventDateField = new TextField();
 		 eventZIPField = new TextField();
 		 ticketAmountField = new TextField();
 		 ticketPriceField = new TextField();
@@ -553,8 +556,9 @@ public class MainMenuView {
 		gridPane.add(eventZip, 0, 3);
 		gridPane.add(eventTypeLabel, 0, 4);
 		gridPane.add(eventStartTimeLabel, 0, 5);
-		gridPane.add(ticketAmountLabel, 0, 6);
-		gridPane.add(ticketPriceLabel, 0, 7);
+		gridPane.add(eventDateLabel, 0, 6);
+		gridPane.add(ticketAmountLabel, 0, 7);
+		gridPane.add(ticketPriceLabel, 0, 8);
 
 		
 		gridPane.add(eventNameField, 1, 1);
@@ -562,9 +566,10 @@ public class MainMenuView {
 		gridPane.add(eventZIPField, 1, 3);
 		gridPane.add(eventTypeField, 1, 4);
 		gridPane.add(eventStartTimeField, 1, 5);
-		gridPane.add(ticketAmountField, 1, 6);
-		gridPane.add(ticketPriceField, 1, 7);
-		gridPane.add(buttonBox,2,8);
+		gridPane.add(eventDateField, 1, 6);
+		gridPane.add(ticketAmountField, 1, 7);
+		gridPane.add(ticketPriceField, 1, 8);
+		gridPane.add(buttonBox,2,9);
 		
 		
 		cancelButtonSetOnAction();
@@ -1073,6 +1078,7 @@ public class MainMenuView {
 		eventInfo[2] = eventZIPField.getText();
 		eventInfo[3] = eventTypeField.getText();
 		eventInfo[4] = eventStartTimeField.getText();
+		eventInfo[5] = eventDateField.getText();
 		return eventInfo;
 		
 	}

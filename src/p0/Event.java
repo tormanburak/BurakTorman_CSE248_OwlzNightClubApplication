@@ -10,6 +10,7 @@ public class Event implements Serializable{
 	private String eventZIP;
 	private String eventType;
 	private String eventStartTime;
+	private String eventDate;
 	private ArrayList<Ticket> ticketArrayList;
 	private ArrayList<Customer> customerArrayList;
 	private Ticket ticket;
@@ -23,12 +24,13 @@ public class Event implements Serializable{
 	private double profit = 0.0;
 	private double tax = 0.08875;
 	
-	public Event(String eventName,String eventAddress,String eventZIP, String eventType , String eventStartTime){
+	public Event(String eventName,String eventAddress,String eventZIP, String eventType , String eventStartTime, String eventDate){
 		this.setEventName(eventName);
 		this.eventAddress = eventAddress;
 		this.eventZIP= eventZIP;
 		this.eventType = eventType;
 		this.eventStartTime = eventStartTime;
+		this.eventDate = eventDate;
 	}
 
 	public Event() {
@@ -123,9 +125,9 @@ public class Event implements Serializable{
 
 	@Override
 	public String toString() {
-		return "Event Name = " + eventName + " |Event Address = " + eventAddress + " |Event ZIP = " + eventZIP
-				+ " |Event Type = " + eventType + " |Event Start-Time = " + eventStartTime + " |Tickets Available = "
-				+ ticketArrayList.size()+ " |Ticket price = $"+ticket.getPrice()+"";
+		return "Event Name = " + eventName + " |||Event Address = " + eventAddress + " |||Event ZIP = " + eventZIP
+				+ " |||Event Type = " + eventType + " |||Event Start-Time = " + eventStartTime + " |||Event Date = "+eventDate+ " |||Tickets Available = "
+				+ ticketArrayList.size()+ " |||Ticket price = $"+ticket.getPrice()+"";
 	}
 
 	public Ticket getTicket() {
@@ -159,6 +161,14 @@ public class Event implements Serializable{
 	}
 	public double getTax(){
 		return tax;
+	}
+
+	public String getEventDate() {
+		return eventDate;
+	}
+
+	public void setEventDate(String eventDate) {
+		this.eventDate = eventDate;
 	}
 
 

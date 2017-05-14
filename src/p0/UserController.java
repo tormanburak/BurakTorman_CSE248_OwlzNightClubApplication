@@ -284,12 +284,13 @@ public class UserController {
 				String eventZIP = eventInfo[2];
 				String eventType = eventInfo[3];
 				String eventStartTime = eventInfo[4];
+				String eventDate = eventInfo[5];
 
 				String price = mainView.getTicketPrice();
 				int amount = mainView.getTicketAmount();
 
 				Establishment establishment = ((Establishment) user);
-				event = new Event(eventName, eventAddress, eventZIP, eventType, eventStartTime);
+				event = new Event(eventName, eventAddress, eventZIP, eventType, eventStartTime,eventDate);
 				event.setTicket(price);
 				event.createTicketArrayList(amount);
 				ticketArrayList = event.getTicketArrayList();
@@ -708,6 +709,11 @@ public class UserController {
 
 	public ArrayList<Event> getCustomerEvents() {
 		Customer customer = (Customer) (user);
+		if(customer.getEventSet() == null){
+			loginView.showAlert("You have not made any purchases");
+			ArrayList<Event> emptyList = new ArrayList<Event>();
+			return emptyList;
+		}else{
 		Event[] array = new Event[customer.getEventSet().size()];
 		customer.getEventSet().toArray(array);
 		ArrayList<Event> eventList = new ArrayList<Event>();
@@ -719,7 +725,7 @@ public class UserController {
 		}
 		Collections.reverse(eventList);
 		return eventList;
-
+		}
 	}
 
 	public ArrayList<Event> getEstablishmentEvents() {
