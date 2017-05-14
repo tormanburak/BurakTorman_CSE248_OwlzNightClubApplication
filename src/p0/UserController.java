@@ -252,34 +252,36 @@ public class UserController {
 				String zip = userInfo[5];
 				String type = userInfo[6];
 
-				if (customerType.equals("customer")) {
-					if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
-							|| birthday.isEmpty() || lastName.isEmpty()) {
-						loginView.showAlert("You have left one or more fields blanks");
-					} else {
-						user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
-								address, zip);
-						eventList = getAllEvents();
-						events = FXCollections.observableArrayList(eventList);
+				if (mainView.checkFields(zip) == 0) {
+					loginView.showAlert("Invalid zip");
+				} else {
 
-						mainView.showCustomerView();
-						showAllEvents();
+					if (customerType.equals("customer")) {
+						if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
+								|| birthday.isEmpty() || lastName.isEmpty()) {
+							loginView.showAlert("You have left one or more fields blanks");
+						} else {
+							user = new Customer(user.getId(), user.getPassword(), name, phoneNumber, lastName, birthday,
+									address, zip);
+							eventList = getAllEvents();
+							events = FXCollections.observableArrayList(eventList);
+
+							mainView.showCustomerView();
+							showAllEvents();
+						}
+					} else if (customerType.equals("establishment")) {
+						if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
+								|| type.isEmpty()) {
+							loginView.showAlert("You have left one or more fields blanks");
+						} else {
+							user = new Establishment(user.getId(), user.getPassword(), name, phoneNumber, address, zip,
+									type);
+							mainView.showEstablishmentView();
+						}
 					}
-				} else if (customerType.equals("establishment")) {
-					if (name.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || zip.isEmpty()
-							|| type.isEmpty()) {
-						loginView.showAlert("You have left one or more fields blanks");
-					} else {
-						user = new Establishment(user.getId(), user.getPassword(), name, phoneNumber, address, zip,
-								type);
-						mainView.showEstablishmentView();
-					}
+
 				}
-
 				addUser(user);
-				// System.out.println(user.toString());
-				// System.out.println("Submit button ");
-				printSet();
 
 			}
 
@@ -301,36 +303,40 @@ public class UserController {
 
 				String price = mainView.getTicketPrice();
 				int amount = mainView.getTicketAmount();
-				if (amount == 0) {
-					loginView.showAlert("You have left ticket amount empty");
+				if (mainView.checkFields(eventZIP) == 0) {
+					loginView.showAlert("Invalid zip");
 				} else {
-
-					if (checkIfFieldsAreWrong(eventInfo) == true || price.isEmpty()
-							|| String.valueOf(amount).isEmpty()) {
-						loginView.showAlert("You have left one or more fields blanks");
+					if (amount == 0) {
+						loginView.showAlert("You have left ticket amount empty");
 					} else {
 
-						Establishment establishment = ((Establishment) user);
-						event = new Event(eventName, eventAddress, eventZIP, eventType, eventStartTime, eventDate);
-						event.setTicket(price);
-						event.createTicketArrayList(amount);
-						ticketArrayList = event.getTicketArrayList();
-						event.setTicketArrayList(ticketArrayList);
-
-						if (establishment.getEventSet() == null) {
-							establishment.createEventSet();
-							establishment.putToSet(event);
-
+						if (checkIfFieldsAreWrong(eventInfo) == true || price.isEmpty()
+								|| String.valueOf(amount).isEmpty()) {
+							loginView.showAlert("You have left one or more fields blanks");
 						} else {
-							establishment.putToSet(event);
+
+							Establishment establishment = ((Establishment) user);
+							event = new Event(eventName, eventAddress, eventZIP, eventType, eventStartTime, eventDate);
+							event.setTicket(price);
+							event.createTicketArrayList(amount);
+							ticketArrayList = event.getTicketArrayList();
+							event.setTicketArrayList(ticketArrayList);
+
+							if (establishment.getEventSet() == null) {
+								establishment.createEventSet();
+								establishment.putToSet(event);
+
+							} else {
+								establishment.putToSet(event);
+							}
+							loginView.showAlert("Event Successfully set !");
+							// System.out.println(establishment.getEventSet());
+							writeUserSetFile(userSet);
+							allEventsSet.add(event);
+							writeEventsSetFile(allEventsSet);
+							// System.out.println(event.toString());
+							// System.out.println(establishment.getEventSet());
 						}
-						loginView.showAlert("Event Successfully set !");
-						// System.out.println(establishment.getEventSet());
-						writeUserSetFile(userSet);
-						allEventsSet.add(event);
-						writeEventsSetFile(allEventsSet);
-						// System.out.println(event.toString());
-						// System.out.println(establishment.getEventSet());
 					}
 				}
 			}
@@ -374,49 +380,49 @@ public class UserController {
 			public void purchaseButtonClicked(MyWindowEvent ev) {
 				double price = mainView.getTicketPricePurchased();
 				int ticketAmount = mainView.getTicketAmountPurchased();
-				if(ticketAmount == 0){
+				if (ticketAmount == 0) {
 					loginView.showAlert("You have not picked a ticket amount to return");
-				}else{
-				double total = calculateCost(ticketAmount, price, event.getTax());
-
-				Customer customer = (Customer) (user);
-				Establishment establishment = new Establishment();
-				establishment = (Establishment) findEstablishment(event);
-				Event estEvent = findEstEvent(establishment, event);
-				if (event.getCustomerArrayList() == null) {
-					event.createCustomerArrayList();
-					event.addToCustomersArrayList(customer);
 				} else {
-					event.addToCustomersArrayList(customer);
-				}
+					double total = calculateCost(ticketAmount, price, event.getTax());
 
-				Event customerEvent = new Event();
+					Customer customer = (Customer) (user);
+					Establishment establishment = new Establishment();
+					establishment = (Establishment) findEstablishment(event);
+					Event estEvent = findEstEvent(establishment, event);
+					if (event.getCustomerArrayList() == null) {
+						event.createCustomerArrayList();
+						event.addToCustomersArrayList(customer);
+					} else {
+						event.addToCustomersArrayList(customer);
+					}
 
-				setCustomersEventInfo(customerEvent, String.valueOf(total), ticketAmount);
-				customerTicketArrayList = customerEvent.getTicketArrayList();
+					Event customerEvent = new Event();
 
-				if (customer.getEventSet() == null) {
-					customer.createEventSet();
-					customer.putToSet(customerEvent);
+					setCustomersEventInfo(customerEvent, String.valueOf(total), ticketAmount);
+					customerTicketArrayList = customerEvent.getTicketArrayList();
 
-				} else {
-					customer.putToSet(customerEvent);
-				}
-				if (ticketAmount > event.getTicketArrayList().size()) {
-					loginView.showAlert(
-							"There are " + event.getTicketArrayList().size() + " tickets left for this event");
-				} else {
+					if (customer.getEventSet() == null) {
+						customer.createEventSet();
+						customer.putToSet(customerEvent);
 
-					loginView.showAlert("You have purchased " + ticketAmount
-							+ " tickets.\nYour total plus 8.875% tax is = $" + total);
-					removeTicketsFromArrayList(event, ticketAmount);
-					establishment.removeFromSet(estEvent);
-					establishment.putToSet(event);
+					} else {
+						customer.putToSet(customerEvent);
+					}
+					if (ticketAmount > event.getTicketArrayList().size()) {
+						loginView.showAlert(
+								"There are " + event.getTicketArrayList().size() + " tickets left for this event");
+					} else {
 
-				}
-				// System.out.println(event.getCustomerArrayList());
-				writeUserSetFile(userSet);
-				writeEventsSetFile(allEventsSet);
+						loginView.showAlert("You have purchased " + ticketAmount
+								+ " tickets.\nYour total plus 8.875% tax is = $" + total);
+						removeTicketsFromArrayList(event, ticketAmount);
+						establishment.removeFromSet(estEvent);
+						establishment.putToSet(event);
+
+					}
+					// System.out.println(event.getCustomerArrayList());
+					writeUserSetFile(userSet);
+					writeEventsSetFile(allEventsSet);
 				}
 			}
 
@@ -446,37 +452,40 @@ public class UserController {
 			public void updateButtonClicked(MyWindowEvent ev) {
 				String[] userInfo = mainView.getUserInfo();
 
-				if (user instanceof Customer) {
-					if (userInfo[0].isEmpty() || userInfo[1].isEmpty() || userInfo[2].isEmpty() || userInfo[3].isEmpty()
-							|| userInfo[4].isEmpty() || userInfo[5].isEmpty()) {
-						loginView.showAlert("You have left one or more field blank");
-					} else {
-						user.setName(userInfo[0]);
-						((Customer) user).setLastName(userInfo[1]);
-						((Customer) user).setBirthday(userInfo[2]);
-						user.setPhoneNumber(userInfo[3]);
-						user.setAddress(userInfo[4]);
-						user.setZip(userInfo[5]);
-						loginView.showAlert("Your information has been updated");
+				if (mainView.checkFields(userInfo[5]) == 0) {
+					loginView.showAlert("Invalid zip");
+				} else {
+					if (user instanceof Customer) {
+						if (userInfo[0].isEmpty() || userInfo[1].isEmpty() || userInfo[2].isEmpty()
+								|| userInfo[3].isEmpty() || userInfo[4].isEmpty() || userInfo[5].isEmpty()) {
+							loginView.showAlert("You have left one or more field blank");
+						} else {
+							user.setName(userInfo[0]);
+							((Customer) user).setLastName(userInfo[1]);
+							((Customer) user).setBirthday(userInfo[2]);
+							user.setPhoneNumber(userInfo[3]);
+							user.setAddress(userInfo[4]);
+							user.setZip(userInfo[5]);
+							loginView.showAlert("Your information has been updated");
 
+						}
 					}
-				}
-				if (user instanceof Establishment) {
-					if (userInfo[0].isEmpty() || userInfo[3].isEmpty() || userInfo[4].isEmpty()
-							|| userInfo[5].isEmpty()) {
-						loginView.showAlert("You have left one or more field blank");
+					if (user instanceof Establishment) {
+						if (userInfo[0].isEmpty() || userInfo[3].isEmpty() || userInfo[4].isEmpty()
+								|| userInfo[5].isEmpty()) {
+							loginView.showAlert("You have left one or more field blank");
 
-					} else {
-						user.setName(userInfo[0]);
-						user.setPhoneNumber(userInfo[3]);
-						user.setAddress(userInfo[4]);
-						user.setZip(userInfo[5]);
-						((Establishment) user).setType(userInfo[6]);
-						loginView.showAlert("Your information has been updated");
+						} else {
+							user.setName(userInfo[0]);
+							user.setPhoneNumber(userInfo[3]);
+							user.setAddress(userInfo[4]);
+							user.setZip(userInfo[5]);
+							((Establishment) user).setType(userInfo[6]);
+							loginView.showAlert("Your information has been updated");
 
+						}
 					}
-				}
-				// System.out.println(user.toString());
+				} // System.out.println(user.toString());
 				writeUserSetFile(userSet);
 
 			}
@@ -484,12 +493,12 @@ public class UserController {
 			@Override
 			public void returnButtonClicked(MyWindowEvent ev) {
 				returnEvent = mainView.getHistoryListViewItems();
-				if(findEvent(returnEvent) == null){
-					
-				}else{
-				event = findEvent(returnEvent);
-				mainView.showCustomerReturnView();
-				// System.out.println(event);
+				if (findEvent(returnEvent) == null) {
+
+				} else {
+					event = findEvent(returnEvent);
+					mainView.showCustomerReturnView();
+					// System.out.println(event);
 				}
 			}
 
@@ -497,39 +506,39 @@ public class UserController {
 			public void confirmButtonClicked(MyWindowEvent ev) {
 
 				int returningTickets = mainView.getTicketReturningAmount();
-				if(returningTickets == 0){
+				if (returningTickets == 0) {
 					loginView.showAlert("Invalid amount entered");
-				}else{
-				int size = returnEvent.getTicketArrayList().size();
-				double total = returningTickets * Integer.valueOf(event.getTicket().getPrice());
-				double totalWithTax = total * event.getTax();
-				total = total + totalWithTax;
-
-				Establishment establishment = new Establishment();
-				establishment = (Establishment) findEstablishment(event);
-				Event estEvent = findEstEvent(establishment, event);
-				double customerMoney = Double.valueOf(returnEvent.getTicket().getPrice()) - total;
-
-				if (returningTickets > size) {
-					loginView.showAlert(
-							"You have " + size + " tickets, you can not return " + returningTickets + " tickets.");
 				} else {
-					if(customerMoney < 1){
-						returnEvent.setTicketPrice("0");
-					}else{
-					returnEvent.setTicketPrice(String.valueOf(customerMoney));
-					}
-					returnEvent.removeTicketsArrayList(returningTickets);
-					event.addToTicketsArrayList(returningTickets);
+					int size = returnEvent.getTicketArrayList().size();
+					double total = returningTickets * Integer.valueOf(event.getTicket().getPrice());
+					double totalWithTax = total * event.getTax();
+					total = total + totalWithTax;
 
-					establishment.removeFromSet(estEvent);
-					establishment.putToSet(event);
-					loginView.showAlert("You have returned " + returningTickets + " tickets, Your total refund is $"
-							+ total + "\nThank you.");
-				}
-				// System.out.println(returnEvent.getTicketArrayList().size());
-				writeUserSetFile(userSet);
-				writeEventsSetFile(allEventsSet);
+					Establishment establishment = new Establishment();
+					establishment = (Establishment) findEstablishment(event);
+					Event estEvent = findEstEvent(establishment, event);
+					double customerMoney = Double.valueOf(returnEvent.getTicket().getPrice()) - total;
+
+					if (returningTickets > size) {
+						loginView.showAlert(
+								"You have " + size + " tickets, you can not return " + returningTickets + " tickets.");
+					} else {
+						if (customerMoney < 1) {
+							returnEvent.setTicketPrice("0");
+						} else {
+							returnEvent.setTicketPrice(String.valueOf(customerMoney));
+						}
+						returnEvent.removeTicketsArrayList(returningTickets);
+						event.addToTicketsArrayList(returningTickets);
+
+						establishment.removeFromSet(estEvent);
+						establishment.putToSet(event);
+						loginView.showAlert("You have returned " + returningTickets + " tickets, Your total refund is $"
+								+ total + "\nThank you.");
+					}
+					// System.out.println(returnEvent.getTicketArrayList().size());
+					writeUserSetFile(userSet);
+					writeEventsSetFile(allEventsSet);
 				}
 			}
 
@@ -783,22 +792,21 @@ public class UserController {
 		Event[] array = new Event[allEventsSet.size()];
 		allEventsSet.toArray(array);
 		Event getEvent = new Event();
-		if(event == null){
+		if (event == null) {
 			loginView.showAlert("There are no purchases to return");
 			return null;
-		}else{
-			
-		
-		for (int i = 0; i < array.length; i++) {
-			if (array[i].getEventZIP().equals(event.getEventZIP())
-					&& array[i].getEventName().equals(event.getEventName())
-					&& array[i].getEventStartTime().equals(event.getEventStartTime())) {
-				getEvent = array[i];
+		} else {
+
+			for (int i = 0; i < array.length; i++) {
+				if (array[i].getEventZIP().equals(event.getEventZIP())
+						&& array[i].getEventName().equals(event.getEventName())
+						&& array[i].getEventStartTime().equals(event.getEventStartTime())) {
+					getEvent = array[i];
 				}
 			}
 		}
 		return getEvent;
-		
+
 	}
 
 	public ArrayList<Event> getAllEvents() {

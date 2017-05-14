@@ -651,7 +651,7 @@ public class MainMenuView {
 		gridPane.add(ticketLabel, 0, 1);
 		gridPane.add(ticketReturningAmountField, 1, 1);
 		gridPane.add(buttonBox, 2, 3);
-		
+
 		noSpaceInReturnField();
 		cancelButtonSetOnAction();
 		confirmButtonSetOnAction();
@@ -741,31 +741,30 @@ public class MainMenuView {
 	// -----------------------------------------------------------------------------------------------------------------------------------------------------------
 	// below this line includes all methods for buttons, menu items, etc.
 	public int getTicketReturningAmount() {
-		 for (int i = 0; i < ticketReturningAmountField.getText().length(); i++) {
-			 
-	            //If we find a non-digit character we return false.
-	            if (!Character.isDigit(ticketReturningAmountField.getText().charAt(i))){
-	                return 0;
-	            }
-	        }
-	        		        
-		if(ticketReturningAmountField.getText().isEmpty()){
+		for (int i = 0; i < ticketReturningAmountField.getText().length(); i++) {
+			// If we find a non-digit character we return false.
+			if (!Character.isDigit(ticketReturningAmountField.getText().charAt(i))) {
+				return 0;
+			}
+		}
+
+		if (ticketReturningAmountField.getText().isEmpty()) {
 			return 0;
 		}
 		int ticketQuantity = Integer.valueOf(ticketReturningAmountField.getText());
 		return ticketQuantity;
-		
+
 	}
 
 	public int getTicketAmountPurchased() {
-		if(ticketComboBox.getValue() == null){
+		if (ticketComboBox.getValue() == null) {
 			return 0;
-		}else{
-		int ticketQuantity = ticketComboBox.getValue();
+		} else {
+			int ticketQuantity = ticketComboBox.getValue();
 
-		return ticketQuantity;
+			return ticketQuantity;
 		}
-		
+
 	}
 
 	public int getTicketPricePurchased() {
@@ -1233,6 +1232,15 @@ public class MainMenuView {
 		});
 
 	}
+	public int checkFields(String zip){
+		for (int i = 0; i < zip.length(); i++) {
+			// If we find a non-digit character we return false.
+			if (!Character.isDigit(zip.charAt(i)) || zip.length() != 5 ) {
+				return 0;
+			}
+		}
+		return 1;
+	}
 
 	public void noSpacesInTicketInfo() {
 		ticketAmountField.textProperty().addListener((observable, old_value, new_value) -> {
@@ -1266,7 +1274,8 @@ public class MainMenuView {
 			}
 		});
 	}
-	public void noSpaceInReturnField(){
+
+	public void noSpaceInReturnField() {
 		ticketReturningAmountField.textProperty().addListener((observable, old_value, new_value) -> {
 			if (new_value.contains(" ")) {
 				// allows no spaces in log in fields

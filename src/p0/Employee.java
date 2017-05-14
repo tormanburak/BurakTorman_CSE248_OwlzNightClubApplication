@@ -63,7 +63,7 @@ public class Employee implements Serializable{
 
 	@Override
 	public String toString() {
-		return "First Name = " + firstName + " ||| Last Name = " + lastName + " ||| Position = " + position + " ||| Salary = "
+		return "First Name = " + firstName + " ||| Last Name = " + lastName + " ||| Position = " + position + " ||| Hourly Salary = $"
 				+ salary + " ||| Status = " + status + "";
 	}
 	
