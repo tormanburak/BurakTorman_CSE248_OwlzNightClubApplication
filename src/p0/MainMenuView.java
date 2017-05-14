@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -103,7 +102,6 @@ public class MainMenuView {
 	private String[] userInfo = new String[7];
 	private String[] eventInfo = new String[6];
 	private String[] employeeInfo = new String[4];
-	private String eventZIP;
 	private TextField priceField;
 	private ComboBox<Integer> ticketComboBox;
 	
@@ -119,7 +117,7 @@ public class MainMenuView {
 	private Button employeeInfoButton;
 	private Button fireEmployeeButton;
 	private TextField searchEmployeeField;
-	private Region employeeListView;
+	private ListView<Employee> employeeListView;
 	private Button searchEmployeeButton;
 	private TextField employeeNameField;
 	private TextField employeeLastNameField;
@@ -682,7 +680,7 @@ public class MainMenuView {
 		 searchEmployeeButton = new Button("Search");	
 		 employeeInfoButton = new Button("Info");
 		 fireEmployeeButton = new Button("Fire Employee");
-		 employeeListView = new ListView<Event>();
+		 employeeListView = new ListView<Employee>();
 		 employeeListView.setPrefWidth(600);
 		
 		HBox buttonBox = new HBox(10);
@@ -694,6 +692,7 @@ public class MainMenuView {
 		gridPane.add(employeeListView, 1, 4,50,10);
 		gridPane.add(buttonBox, 2, 16);
 	
+		searchEmployeeButtonSetOnAction();
 		cancelButtonSetOnAction();
 
 		
@@ -803,8 +802,11 @@ public class MainMenuView {
 	public void showEstablishmentHistory(ObservableList<Event> event){
 		establishmentHistoryListView.setItems(event);
 	}
-	public void showMyCustomerList(ObservableList<Customer> event){
-		myCustomersListView.setItems(event);
+	public void showMyCustomerList(ObservableList<Customer> customer){
+		myCustomersListView.setItems(customer);
+	}
+	public void showEmployeeList(ObservableList<Employee> employee){
+		employeeListView.setItems(employee);
 	}
 	public void showEventCreateView(){
 		borderPane.setCenter(eventCreateView());
@@ -1016,6 +1018,14 @@ public class MainMenuView {
 			}	
 		});
 	}
+	public void searchEmployeeButtonSetOnAction(){
+		searchEmployeeButton.setOnAction(e->{
+			MyWindowEvent ev = new MyWindowEvent(this);
+			if(windowListener != null) {
+				windowListener.searchEmployeeButtonClicked(ev);
+			}	
+		});
+	}
 	public void setCustomerMyProfileFields(String name,String lastName, String birthDay, String phoneNumber,String address,String zip){
 		nameField.setText(name);
 		lastNameField.setText(lastName);
@@ -1097,7 +1107,10 @@ public class MainMenuView {
 		return ticketPriceField.getText();
 	}
 	public String getEventZip(){
-		return eventZIP = searchEventField.getText();
+		return searchEventField.getText();
+	}
+	public String getEmployeeLastName(){
+		return searchEmployeeField.getText();
 	}
 	/**
 	 * 

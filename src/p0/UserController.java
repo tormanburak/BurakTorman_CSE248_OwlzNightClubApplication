@@ -32,7 +32,7 @@ public class UserController {
 	private ArrayList<Event> eventList;
 	private ObservableList<Event> events;
 
-	private String userDataFile = "data.dat";
+	private String userDataFile = "passwordData.dat";
 
 	private static String customerType;
 
@@ -88,11 +88,11 @@ public class UserController {
 			input.close();
 
 		} catch (FileNotFoundException e) {
-			loginView.showAlert("Problem occured with reading files");
+			//loginView.showAlert("Problem occured with reading files");
 		} catch (IOException e) {
 
 		} catch (ClassNotFoundException e) {
-			loginView.showAlert("Class not found while reading file");
+			//loginView.showAlert("Class not found while reading file");
 		}
 	}
 
@@ -161,7 +161,11 @@ public class UserController {
 
 							mainView.showEstablishmentView();
 								if (eventList.isEmpty()) {
-								loginView.showAlert("You have no events at this moment");
+									 eventList = new ArrayList<Event>();
+									events = FXCollections.observableArrayList(eventList);
+
+									mainView.showEstablishmentEvents(events);
+
 								} else {
 
 								mainView.showEstablishmentEvents(events);
@@ -522,8 +526,13 @@ public class UserController {
 
 			@Override
 			public void allEmployeesItemClicked(MyWindowEvent ev) {
-				mainView.showAllEmployeesView();
+				Establishment establishment = (Establishment)(user);
 				
+				ArrayList<Employee> eventList = getAllEmployess(establishment);
+				ObservableList<Employee> events = FXCollections.observableArrayList(eventList);
+				
+				mainView.showAllEmployeesView();
+				mainView.showEmployeeList(events);
 			}
 
 			@Override
@@ -554,6 +563,21 @@ public class UserController {
 				System.out.println(establishment.getEmployeeSet());
 				
 				//System.out.println(Arrays.toString(employeeInfo));
+			}
+
+			@Override
+			public void searchEmployeeButtonClicked(MyWindowEvent ev) {
+				String lastName = mainView.getEmployeeLastName();
+				ArrayList<Employee> employeeList = findEmployee(lastName);
+				if(employeeList.isEmpty()){
+					loginView.showAlert("No Employe Found");
+				}else{
+					
+					ObservableList<Employee> employees = FXCollections.observableArrayList(employeeList);
+					
+					mainView.showEmployeeList(employees);
+				}
+				
 			}
 
 		});
@@ -795,7 +819,7 @@ public class UserController {
 
 	public void showEstablishmentEvents() {
 		if (eventList.isEmpty()) {
-			loginView.showAlert("No events at this moment");
+			
 		} else {
 			mainView.showEstablishmentEvents(events);
 		}
@@ -812,6 +836,38 @@ public class UserController {
 			}
 		}
 		return null;
+	}
+	public ArrayList<Employee> findEmployee(String lastName){
+		Establishment establishment = (Establishment)(user);
+		Employee[] array = new Employee[establishment.getEmployeeSet().size()];
+		establishment.getEmployeeSet().toArray(array);
+		ArrayList<Employee> employeeList = new ArrayList<Employee>();
+		
+		for(int i =0; i<array.length;i++){
+			if(array[i].getLastName().equals(lastName)){
+				 employeeList.add(array[i]);
+			}
+		}
+		return employeeList;
+	}
+	public ArrayList<Employee> getAllEmployess(Establishment establishment){
+		
+		if(establishment.getEmployeeSet() == null){
+			ArrayList<Employee> emptyList = new ArrayList<Employee>();
+			return emptyList;
+		}else{
+			Employee[] array = new Employee[establishment.getEmployeeSet().size()];
 
+		establishment.getEmployeeSet().toArray(array);
+		ArrayList<Employee> employeeList = new ArrayList<Employee>();
+		
+		for (int i = 0; i < array.length; i++) {
+
+			employeeList.add(array[i]);
+
+		}
+		Collections.reverse(employeeList);
+		return employeeList;
+		}
 	}
 }
