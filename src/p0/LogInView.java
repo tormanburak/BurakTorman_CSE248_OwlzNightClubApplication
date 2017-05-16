@@ -7,6 +7,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -14,7 +16,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.stage.Stage;
 
 
@@ -36,6 +41,9 @@ public class LogInView {
 	private Scene scene;
 	private MyLoginWindowListener windowListener;
 	private Alert messageAlert;
+	private Image image;
+	private int sceneX = 1500;
+	private int sceneY = 800;
 		
 	public LogInView(Stage stage){
 		this.stage = stage;
@@ -47,7 +55,6 @@ public class LogInView {
 		borderPane = new BorderPane();
 		
 		borderPane.setPadding(new Insets(100,170,300,100));
-		
 		
 		gridPane = new GridPane();
 		gridPane.setAlignment(Pos.BOTTOM_CENTER);
@@ -62,6 +69,24 @@ public class LogInView {
 		passwordField = new PasswordField();
 		logIn = new Button("Log In");
 		signUp = new Button("Sign Up");
+		
+		image = new Image(getClass().getResourceAsStream("/pic/club logo 2.png"), 250, 250, true, true);
+		ImageView iv = new ImageView(image);
+		iv.setSmooth(true);
+		Label label = new Label("Owlz");
+		label.setLayoutX(100);
+		label.setFont(Font.font("Californian FB", FontPosture.ITALIC, 50));
+		label.setTextFill(Color.AZURE);
+		
+		VBox imgbox = new VBox();
+		imgbox.setLayoutX(sceneX / 2 - 110);
+		imgbox.setLayoutY(sceneY / 2 - 350);
+		imgbox.getChildren().addAll(iv);
+		
+		VBox labelbox = new VBox();
+		labelbox.setLayoutX(sceneX/2 - 40);
+		labelbox.setLayoutY(sceneY/2 - 100);
+		labelbox.getChildren().addAll(label);
 		
 		idLabel.setTextFill(Color.WHITE);
 		passwordLabel.setTextFill(Color.WHITE);
@@ -85,10 +110,10 @@ public class LogInView {
 		
 		Group root = new Group();
 		
-		scene = new Scene(root,1500,800,Color.DARKMAGENTA);
+		scene = new Scene(root,sceneX,sceneY,Color.DARKMAGENTA);
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
-		root.getChildren().add(borderPane);
+		root.getChildren().addAll(borderPane,imgbox,labelbox);
 		
 		stage.setScene(scene);
 		stage.show();
