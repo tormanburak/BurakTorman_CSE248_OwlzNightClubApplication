@@ -1,2 +1,2 @@
 # BurakTorman_CSE248_OwlzNightClubApplication
-Final project for cse 248
+Night club application similar to Ticketmaster in funcionality. Customers and Establishments can register to search/create events.
